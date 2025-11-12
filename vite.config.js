@@ -25,8 +25,8 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: '192.168.56.88',
-        // host: '192.168.255.2',
+        // host: '192.168.56.88',
+        host: '192.168.255.2',
         // host: true,
         mimetype: 'text/html',
         watch: {
