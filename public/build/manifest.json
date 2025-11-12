@@ -1,18 +1,17 @@
 {
-  "_AuthenticatedLayout-BRrwN3tg.css": {
-    "file": "assets/AuthenticatedLayout-BRrwN3tg.css",
-    "src": "_AuthenticatedLayout-BRrwN3tg.css"
-  },
-  "_AuthenticatedLayout-DPSqxzww.js": {
-    "file": "assets/AuthenticatedLayout-DPSqxzww.js",
+  "_AuthenticatedLayout-BCQ_G6xR.js": {
+    "file": "assets/AuthenticatedLayout-BCQ_G6xR.js",
     "name": "AuthenticatedLayout",
     "imports": [
-      "_vendor-6g72E4NQ.js",
-      "__plugin-vue_export-helper-DlAUqK2U.js"
+      "_vendor-6g72E4NQ.js"
     ],
     "css": [
-      "assets/AuthenticatedLayout-BRrwN3tg.css"
+      "assets/AuthenticatedLayout-vSZ8ofsn.css"
     ]
+  },
+  "_AuthenticatedLayout-vSZ8ofsn.css": {
+    "file": "assets/AuthenticatedLayout-vSZ8ofsn.css",
+    "src": "_AuthenticatedLayout-vSZ8ofsn.css"
   },
   "_GuestLayout-CMFRLXKd.js": {
     "file": "assets/GuestLayout-CMFRLXKd.js",
@@ -53,7 +52,7 @@
     "src": "_vendor-OyBoFWsh.css"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Bg8ODKbd.css",
+    "file": "assets/app-B4-mYOOg.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -137,23 +136,22 @@
     ]
   },
   "resources/js/Pages/Dashboard.vue": {
-    "file": "assets/Dashboard-Dq1yIeh7.js",
+    "file": "assets/Dashboard-C6u8YiXZ.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Dashboard.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_AuthenticatedLayout-DPSqxzww.js",
-      "_vendor-6g72E4NQ.js",
-      "__plugin-vue_export-helper-DlAUqK2U.js"
+      "_AuthenticatedLayout-BCQ_G6xR.js",
+      "_vendor-6g72E4NQ.js"
     ]
   },
   "resources/js/Pages/Profile/Edit.vue": {
-    "file": "assets/Edit-BPiptX7C.js",
+    "file": "assets/Edit-DYQ94p_0.js",
     "name": "Edit",
     "src": "resources/js/Pages/Profile/Edit.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_AuthenticatedLayout-DPSqxzww.js",
+      "_AuthenticatedLayout-BCQ_G6xR.js",
       "resources/js/Pages/Profile/Partials/DeleteUserForm.vue",
       "resources/js/Pages/Profile/Partials/UpdatePasswordForm.vue",
       "resources/js/Pages/Profile/Partials/UpdateProfileInformationForm.vue",
@@ -210,7 +208,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-E2t7dv2m.js",
+    "file": "assets/app-BN_4ewy9.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -232,7 +230,7 @@
       "resources/js/Pages/Welcome.vue"
     ],
     "css": [
-      "assets/app-Bg8ODKbd.css"
+      "assets/app-B4-mYOOg.css"
     ]
   }
 }

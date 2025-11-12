@@ -2,7 +2,7 @@
     <button
         @click="$emit('click')"
         :class="[
-      'w-full flex items-center gap-3 px-3 py-2 text-xs rounded-xl transition',
+      'w-full flex items-center gap-3 px-3 py-2 text-xs rounded-xl transition cursor-pointer duration-150',
       active ? 'bg-white/20 text-white shadow-lg shadow-black/40'
              : 'text-white/80 hover:bg-white/10',
     ]"
