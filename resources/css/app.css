@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* Design tokens (colores AluMun) */
+@theme {
+    --color-alumun-guinda: #7b0015;
+    --color-alumun-pino: #0b3d2e;
+    --color-alumun-mostaza: #d4a017;
+    --color-alumun-gris: #4b5563;
+    --color-alumun-grisclaro: #e5e7eb;
+    --color-alumun-fondo: #0b1520;
+}
+
+/* Utilidades opcionales propias */
+@utility card {
+    @apply rounded-2xl border border-slate-700/70 bg-slate-900/80;
+}
