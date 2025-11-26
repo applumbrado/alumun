@@ -1,10 +1,11 @@
 <?php
 
 return [
-    'paths' => ['api/*', 'login', 'logout', 'broadcasting/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'login', 'logout', 'broadcasting/*', 'sanctum/csrf-cookie','socket.io'],
     'allowed_methods' => ['*'],
     'allowed_origins' => [
         'http://localhost:6001',
+        'http://localhost:8000',
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'https://alumun.gob.mx',

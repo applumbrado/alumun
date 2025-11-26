@@ -14,3 +14,80 @@
 @utility card {
     @apply rounded-2xl border border-slate-700/70 bg-slate-900/80;
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-fadeIn { animation: fadeIn 0.15s ease-out; }
+
+/* ANIMACIÓN SUAVE PASTEL PARA CAMBIO DE TABS */
+.tab-slide-enter-from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+}
+
+.tab-slide-enter-active {
+    transition: all 300ms cubic-bezier(0.24, 0.8, 0.42, 1);
+}
+
+.tab-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+}
+
+.tab-slide-leave-active {
+    transition: all 220ms cubic-bezier(0.24, 0.8, 0.42, 1);
+}
+
+.input-field {
+    @apply w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-300 bg-slate-50
+    text-slate-700 shadow-sm cursor-pointer transition-all duration-200;
+}
+
+.emoji-icon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 text-lg select-none opacity-70;
+}
+
+/* ✨ Glow pastel en hover y focus */
+.input-field:hover {
+    box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.25); /* sky-300 glow */
+}
+
+.input-field:focus {
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.35); /* emerald-400 glow */
+    border-color: rgba(52, 211, 153, 0.8);
+}
+
+button, input, select {
+    cursor: pointer !important;
+}
+
+/* ---- TOAST CUSTOM ALUMUN ---- */
+
+.toast-alumun {
+    backdrop-filter: blur(12px) saturate(180%);
+    background: rgba(30, 41, 59, 0.7) !important; /* slate-800/70 */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    padding: 14px 18px !important;
+    border-radius: 12px !important;
+    font-size: 0.9rem !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
+}
+
+.toast-success {
+    border-left: 4px solid #10b981 !important; /* emerald-500 */
+}
+
+.toast-error {
+    border-left: 4px solid #ef4444 !important; /* red-500 */
+}
+
+.toast-info {
+    border-left: 4px solid #3b82f6 !important; /* blue-500 */
+}
+
+.toast-warning {
+    border-left: 4px solid #f59e0b !important; /* amber-500 */
+}

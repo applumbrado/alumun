@@ -13,8 +13,11 @@
         "laravel/framework": "^12.38.0",
         "laravel/sanctum": "^4.2.0",
         "laravel/tinker": "^2.10.1",
+        "phpoffice/phpspreadsheet": "^5.2",
         "spatie/laravel-permission": "^6.23",
-        "tightenco/ziggy": "^2.6.0"
+        "tightenco/ziggy": "^2.6.0",
+        "ext-zip": "*",
+        "ext-simplexml": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest"

@@ -35,12 +35,14 @@
             </main>
         </div>
     </div>
+    <ToastProvider />
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
 import Sidebar from '@/Components/Sidebar.vue'
+import ToastProvider from "@/Components/Ui/ToastProvider.vue";
 
 const sidebarOpen = ref(false)
 const isCollapsed = ref(false)

@@ -45,8 +45,10 @@ defineProps({
         <!-- Navegación -->
         <nav class="flex-1 overflow-y-auto py-4 space-y-2">
             <SidebarItem icon="🏠" label="Inicio" :active="route().current('dashboard')" :collapsed="isCollapsed" @click="$emit('navigate', 'dashboard')" />
-            <SidebarItem icon="💡" label="Reportes" :collapsed="isCollapsed" />
-            <SidebarItem icon="📊" label="Tableros" :collapsed="isCollapsed" />
+            <SidebarItem icon="🏔" label="Grupos" :active="route().current('grupos.index')" :collapsed="isCollapsed" @click="$emit('navigate', 'grupos.index')"  />
+            <SidebarItem icon="💡" label="Servicios" :active="route().current('servicios.index')" :collapsed="isCollapsed" @click="$emit('navigate', 'servicios.index')"  />
+            <SidebarItem icon="🛃" label="Recibos" :active="route().current('cfe.importar.index')" :collapsed="isCollapsed" @click="$emit('navigate', 'cfe.importar.index')"  />
+            <SidebarItem icon="📋" label="Reportes" :collapsed="isCollapsed" />
             <SidebarItem icon="⚙️" label="Configuración" :collapsed="isCollapsed" />
         </nav>
 

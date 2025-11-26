@@ -10,6 +10,7 @@ import LaravelPermissionToVueJS from 'laravel-permission-to-vuejs'
 import VueToast from 'vue-toast-notification'
 import 'vue-toast-notification/dist/theme-sugar.css'
 import sweetalertPlugin from './plugins/sweetalert';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import axios from 'axios';
 axios.defaults.withCredentials = true;

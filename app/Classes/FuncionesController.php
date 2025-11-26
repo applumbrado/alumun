@@ -290,7 +290,25 @@ class FuncionesController extends Controller {
         return $currentDay >= 1 && $currentDay <= 10;
     }
 
+function get_client_ip() {
+    $ip_address = '';
 
+    // Prioridad 1: X-Forwarded-For (típico en proxies/cloud)
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip_list = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $ip_address = trim($ip_list[0]); // El primer IP suele ser el del cliente
+    }
+    // Prioridad 2: Otros headers comunes
+    else if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+    }
+    // Prioridad 3: IP directa del servidor (si no hay proxy)
+    else {
+        $ip_address = $_SERVER['REMOTE_ADDR'];
+    }
+
+    return $ip_address;
+}
 
 
 

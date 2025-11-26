@@ -77,6 +77,15 @@ return [
             'throw' => true,
         ],
 
+        'cfe' => [
+            'driver' => env('CFE_DRIVER'),
+            'root' => storage_path(env('CFE_ROOT_LOCAL')),
+            'url' => env('APP_URL').env('CFE_URL'),
+            'visibility' => env('CFE_VISIBILITY'),
+            'throw' => true,
+        ],
+
+
 
     ],
 

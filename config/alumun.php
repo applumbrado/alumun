@@ -85,6 +85,10 @@ return [
             'imagene_parent'         => 'imagene_parent',
             'imagene_user'           => 'imagene_user',
             'logs'                   => 'logs',
+            'servicios'              => 'servicios',
+            'grupos'                 => 'grupos',
+            'periodos'               => 'periodos',
+            'recibos'                => 'recibos',
         ],
 
     ],

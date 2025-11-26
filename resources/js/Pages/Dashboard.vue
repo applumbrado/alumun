@@ -14,7 +14,7 @@ const props = defineProps({ user: Object, stats: Object });
                 <div>
                     <p class="text-xs text-slate-400">Bienvenido(a)</p>
                     <h2 class="text-lg md:text-xl font-semibold text-slate-50">
-                        {{ props.user.nombre_completo }} {{ props.user.ap_paterno }}
+                        {{ props.user.nombre_completo }}
                     </h2>
                     <p class="text-xs text-slate-400 mt-1">Visualiza el estado del alumbrado y los reportes activos.</p>
                 </div>

@@ -34,7 +34,7 @@ export default defineConfig({
         },
     },
     optimizeDeps: {
-        include: ['jquery', 'select2', 'datatables.net-vue3', 'datatables.net-dt'],
+        include: ['jquery'],
     },
     build: {
         chunkSizeWarningLimit: 10000,
@@ -49,3 +49,5 @@ export default defineConfig({
         }
     }
 });
+
+// include: ['jquery', 'select2', 'datatables.net-vue3', 'datatables.net-dt'],
