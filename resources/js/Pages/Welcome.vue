@@ -16,7 +16,7 @@ import { Link, Head } from '@inertiajs/vue3';
                     Monitorea reportes, zonas críticas y el estado de la iluminación en tiempo real desde una interfaz moderna.
                 </p>
                 <div class="flex flex-wrap gap-3 pt-2">
-                    <Link :href="route('login.show')" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-alumun-guinda text-sm font-semibold shadow-lg shadow-alumun-guinda/40 hover:bg-alumun-guinda/90 transition">
+                    <Link :href="/login" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-alumun-guinda text-sm font-semibold shadow-lg shadow-alumun-guinda/40 hover:bg-alumun-guinda/90 transition">
                         Iniciar sesión
                     </Link>
                     <span class="text-xs text-slate-400 inline-flex items-center gap-2">
