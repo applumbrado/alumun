@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             RolesAndPermissionsSeeder::class,
-            ImportUsersExternalSeeder::class,
             CreateGruposSeeder::class,
+            ImportUsersExternalSeeder::class,
             ImportServiciosSeeders::class,
         ]);
 
