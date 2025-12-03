@@ -1,7 +1,7 @@
 import '../css/app.css';
 import './bootstrap';
 
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
@@ -42,3 +42,23 @@ createInertiaApp({
         color: '#043eea',
     },
 });
+
+
+// 🔔 SUSCRIPCIÓN GLOBAL AL CAMBIO DE PERIODO
+if (window.Echo) {
+    window.Echo
+        .channel('alumun.periodos')
+        // 👉 OJO: como usas broadcastAs('PeriodoVigenteChanged'),
+        // se escucha con un punto al inicio:
+        .listen('.PeriodoVigenteChanged', (e) => {
+            console.log('📡 Evento PeriodoVigenteChanged recibido en frontend:', e)
+
+            router.reload({
+                only: ['periodo_vigente'],
+                preserveScroll: true,
+                preserveState: true,
+            })
+        })
+} else {
+    console.error('❌ window.Echo no está inicializado')
+}

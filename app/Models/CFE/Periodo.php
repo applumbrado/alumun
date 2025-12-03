@@ -174,8 +174,8 @@ class Periodo extends Model
     /**
      * Devuelve el periodo vigente (predeterminado), con caché.
      */
-    public static function vigente(): ?self
-    {
+    public static function vigente(): ?self{
+
         return Cache::remember(
             'periodo_vigente',
             now()->addMinutes(30),
@@ -187,6 +187,7 @@ class Periodo extends Model
                     ->first();
             }
         );
+
     }
 
     /* =========================================================================

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Catalogos;
 
+use App\Events\PeriodoVigenteChanged;
 use App\Http\Controllers\Controller;
 use App\Models\CFE\Periodo;
 use Illuminate\Http\Request;
@@ -76,9 +77,12 @@ class PeriodosController extends Controller{
         ]);
     }
 
-    public function setPredeterminado(Periodo $periodo)
-    {
+    public function setPredeterminado(Periodo $periodo){
+
         $periodo->marcarComoPredeterminado();
+
+        // 🔔 Lanzar evento broadcast a todos los clientes conectados
+        event(new PeriodoVigenteChanged($periodo));
 
         return response()->json([
             'success' => true,

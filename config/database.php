@@ -113,6 +113,33 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+//        'redis' => [
+//            'driver'     => 'redis',
+//            'connection' => env('BROADCAST_REDIS_CONNECTION', 'default'),
+//            'queue' => null,
+//        ],
+
+
+        'redis' => [
+            'client' => env('REDIS_CLIENT', 'predis'),
+
+            'default' => [
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'password' => env('REDIS_PASSWORD', null),
+                'port' => env('REDIS_PORT', 6379),
+                'database' => env('REDIS_DB', 0),
+            ],
+
+            // Para broadcasting puedes usar una base de datos separada
+            'broadcasting' => [
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'password' => env('REDIS_PASSWORD', null),
+                'port' => env('REDIS_PORT', 6379),
+                'database' => 1, // Base de datos diferente para broadcasting
+            ],
+        ],
+
+
     ],
 
     /*
