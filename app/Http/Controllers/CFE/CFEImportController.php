@@ -87,9 +87,13 @@ class CFEImportController extends Controller
             }
         }
 
+        $recibos = Recibo::orderByDesc('id')
+            ->get();
+
         return response()->json([
             'success' => true,
-            'procesados' => $resultados
+            'procesados' => $resultados,
+            'recibos'    => $recibos,
         ]);
     }
 

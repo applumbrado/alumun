@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Catalogos\GrupoController;
+use App\Http\Controllers\Catalogos\PeriodosController;
 use App\Http\Controllers\Catalogos\ServicioController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\CFE\CFEImportController;
@@ -39,11 +40,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/importar/index', [CFEImportController::class, 'index'])->name('cfe.importar.index');
         Route::post('/importar', [CFEImportController::class, 'importar'])->name('cfe.importar');
 
-//        Route::get('/importar', function () {
-//            return Inertia::render('CFE/ImportarArchivosCFE');
-//        })->name('cfe.importar');
 
     });
+
+    Route::get('/periodos', [PeriodosController::class, 'index'])->name('periodos.index');
+    Route::post('/periodos', [PeriodosController::class, 'store'])->name('periodos.store');
+    Route::put('/periodos/{periodo}', [PeriodosController::class, 'update'])->name('periodos.update');
+    Route::delete('/periodos/{periodo}', [PeriodosController::class, 'destroy'])->name('periodos.destroy');
+
+    Route::post('/periodos/{periodo}/predeterminar', [PeriodosController::class, 'setPredeterminado'])
+        ->name('periodos.predeterminar');
+
 
 
 

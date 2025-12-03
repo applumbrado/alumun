@@ -32,6 +32,8 @@ const recibosLocal = ref([...props.recibos])
 const showSelection = ref(false);
 const isColActions = ref(true);
 
+const MAX_FILES_PER_REQUEST = 5
+
 
 async function subirArchivo() {
     if (!archivosZip.value.length) {
@@ -59,48 +61,103 @@ async function subirArchivo() {
     if (!confirm.isConfirmed) return
 
     cargando.value = true
+    resultados.value = []
+    progresoPorArchivo.value = {}
 
     try {
-        const formData = new FormData()
+        // const formData = new FormData()
+        //
+        // archivosZip.value.forEach(file => {
+        //     formData.append('archivos[]', file)
+        // })
+        //
+        // formData.append('forceOverwrite', forceOverwrite.value ? 1 : 0)
+        //
+        // const { data } = await axios.post(route('cfe.importar'), formData, {
+        //     headers: {
+        //         'Content-Type': 'multipart/form-data'
+        //     },
+        //
+        //     // 🚀 AQUÍ SE ACTUALIZA EL PROGRESO
+        //     onUploadProgress: function (progressEvent) {
+        //
+        //         // progreso total
+        //         const porcentaje = Math.round(
+        //             (progressEvent.loaded * 100) / progressEvent.total
+        //         )
+        //         progreso.value = porcentaje
+        //
+        //         // progreso por archivo (estimado por peso relativo)
+        //         const totalSize = archivosZip.value.reduce((a, f) => a + f.size, 0)
+        //         let cargado = progressEvent.loaded
+        //
+        //         archivosZip.value.forEach(file => {
+        //             // proporción del archivo relativo al total
+        //             const porcentajeEstimado = Math.min(
+        //                 100,
+        //                 Math.round((cargado / totalSize) * 100)
+        //             )
+        //             progresoPorArchivo.value[file.name] = porcentajeEstimado
+        //         })
+        //     }
+        // })
+        //
+        // resultados.value = data.procesados
+        //
+        // recibosLocal.value = data.recibos ? data.recibos : []
+        //
+        // Swal.fire({
+        //     icon: 'success',
+        //     title: 'Importación completa',
+        //     timer: 2000
+        // })
 
-        archivosZip.value.forEach(file => {
-            formData.append('archivos[]', file)
-        })
 
-        formData.append('forceOverwrite', forceOverwrite.value ? 1 : 0)
+        const totalFiles = archivosZip.value.length
 
-        const { data } = await axios.post(route('cfe.importar'), formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
+        for (let i = 0; i < totalFiles; i += MAX_FILES_PER_REQUEST) {
+            const batch = archivosZip.value.slice(i, i + MAX_FILES_PER_REQUEST)
+            const formData = new FormData()
 
-            // 🚀 AQUÍ SE ACTUALIZA EL PROGRESO
-            onUploadProgress: function (progressEvent) {
+            batch.forEach(file => {
+                formData.append('archivos[]', file)
+            })
 
-                // progreso total
-                const porcentaje = Math.round(
-                    (progressEvent.loaded * 100) / progressEvent.total
-                )
-                progreso.value = porcentaje
+            formData.append('forceOverwrite', forceOverwrite.value ? 1 : 0)
 
-                // progreso por archivo (estimado por peso relativo)
-                const totalSize = archivosZip.value.reduce((a, f) => a + f.size, 0)
-                let cargado = progressEvent.loaded
-
-                archivosZip.value.forEach(file => {
-                    // proporción del archivo relativo al total
-                    const porcentajeEstimado = Math.min(
-                        100,
-                        Math.round((cargado / totalSize) * 100)
+            const { data } = await axios.post(route('cfe.importar'), formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress(progressEvent) {
+                    const porcentaje = Math.round(
+                        (progressEvent.loaded * 100) / progressEvent.total
                     )
-                    progresoPorArchivo.value[file.name] = porcentajeEstimado
-                })
+                    progreso.value = porcentaje
+
+                    const totalSize = batch.reduce((a, f) => a + f.size, 0)
+                    let cargado = progressEvent.loaded
+
+                    batch.forEach(file => {
+                        const porcentajeEstimado = Math.min(
+                            100,
+                            Math.round((cargado / totalSize) * 100)
+                        )
+                        progresoPorArchivo.value[file.name] = porcentajeEstimado
+                    })
+                }
+            })
+
+            // acumular resultados de todos los lotes
+            if (Array.isArray(data.procesados)) {
+                resultados.value.push(...data.procesados)
             }
-        })
 
-        resultados.value = data.procesados
-
-        recibosLocal.value = await fetchRecibosActualizados()
+            // si también traes recibos:
+            if (Array.isArray(data.recibos)) {
+                recibosLocal.value = data.recibos
+            }
+        }
 
         Swal.fire({
             icon: 'success',
@@ -109,10 +166,10 @@ async function subirArchivo() {
         })
 
     } catch (err) {
-        console.error(err)
+        console.error(err.message)
         Swal.fire({
             icon: 'error',
-            title: 'Error al importar'
+            title: 'Error al importar \n\t' + err.message
         })
     } finally {
         cargando.value = false
@@ -145,18 +202,18 @@ async function subirArchivo() {
             />
 
             <!-- Barra por archivo -->
-            <div v-if="Object.keys(progresoPorArchivo).length" class="mt-4 space-y-3">
+<!--            <div v-if="Object.keys(progresoPorArchivo).length" class="mt-4 space-y-3">-->
 
-                <div v-for="(porc, nombre) in progresoPorArchivo" :key="nombre">
-                    <p class="text-white text-xs mb-1">{{ nombre }} — {{ porc }}%</p>
+<!--                <div v-for="(porc, nombre) in progresoPorArchivo" :key="nombre">-->
+<!--                    <p class="text-white text-xs mb-1">{{ nombre }} — {{ porc }}%</p>-->
 
-                    <div class="w-full h-2 bg-gray-700 rounded overflow-hidden">
-                        <div class="h-2 bg-blue-500 transition-all duration-200"
-                             :style="{ width: porc + '%' }"></div>
-                    </div>
-                </div>
+<!--                    <div class="w-full h-2 bg-gray-700 rounded overflow-hidden">-->
+<!--                        <div class="h-2 bg-blue-500 transition-all duration-200"-->
+<!--                             :style="{ width: porc + '%' }"></div>-->
+<!--                    </div>-->
+<!--                </div>-->
 
-            </div>
+<!--            </div>-->
 
             <!-- Checkbox sobrescribir -->
             <label class="flex items-center gap-2 mb-4 cursor-pointer">

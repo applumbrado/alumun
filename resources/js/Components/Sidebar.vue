@@ -1,5 +1,8 @@
 <script setup>
 import SidebarItem from '@/Components/SidebarItem.vue'
+import {computed} from "vue";
+import {usePage} from "@inertiajs/vue3";
+import {usePeriodoVigente} from "@/Composables/usePeriodoVigente.js";
 
 defineProps({
     isCollapsed: { type: Boolean, default: false },
@@ -7,6 +10,13 @@ defineProps({
     fullName: { type: String, default: '' },
     initials: { type: String, default: '' },
 })
+
+
+// const periodoVigente = computed(() => usePage().props.periodo_vigente)
+
+const { periodoVigente, labelPeriodoVigente } = usePeriodoVigente()
+
+
 </script>
 
 <template>
@@ -46,6 +56,7 @@ defineProps({
         <nav class="flex-1 overflow-y-auto py-4 space-y-2">
             <SidebarItem icon="🏠" label="Inicio" :active="route().current('dashboard')" :collapsed="isCollapsed" @click="$emit('navigate', 'dashboard')" />
             <SidebarItem icon="🏔" label="Grupos" :active="route().current('grupos.index')" :collapsed="isCollapsed" @click="$emit('navigate', 'grupos.index')"  />
+            <SidebarItem icon="🚞" label="Prioddos" :active="route().current('periodos.index')" :collapsed="isCollapsed" @click="$emit('navigate', 'periodos.index')"  />
             <SidebarItem icon="💡" label="Servicios" :active="route().current('servicios.index')" :collapsed="isCollapsed" @click="$emit('navigate', 'servicios.index')"  />
             <SidebarItem icon="🛃" label="Recibos" :active="route().current('cfe.importar.index')" :collapsed="isCollapsed" @click="$emit('navigate', 'cfe.importar.index')"  />
             <SidebarItem icon="📋" label="Reportes" :collapsed="isCollapsed" />
@@ -57,8 +68,8 @@ defineProps({
             <div class="flex items-center gap-2 mb-2">
                 <div class="h-8 w-8 rounded-full bg-black/30 flex items-center justify-center text-xs">{{ initials }}</div>
                 <div v-if="!isCollapsed" class="flex flex-col">
-                    <span class="text-xs font-semibold truncate">{{ fullName }}</span>
-                    <span class="text-[10px] text-white/70">Usuario del sistema</span>
+                    <span class="text-xs font-semibold truncate">{{ labelPeriodoVigente }}</span>
+                    <span class="text-[10px] text-white/70">Periodo Vigente</span>
                 </div>
             </div>
             <button

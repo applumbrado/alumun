@@ -17,9 +17,10 @@ return new class extends Migration {
             $table->string('mes_nombre',20)->default('');
             $table->smallInteger('tipo')->default(0);
             $table->smallInteger('digito')->default(0);
+            $table->boolean('predeterminado')->default(false)->index();
             $table->softDeletes();
             $table->timestamps();
-            $table->unique(['anomes', 'mes', 'tipo']);
+            $table->unique(['anomes', 'ano', 'mes', 'tipo']);
 
         });
 

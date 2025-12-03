@@ -7,6 +7,7 @@ use App\Models\CFE\Periodo;
 use App\Models\CFE\Recibo;
 use SimpleXMLElement;
 use ZipArchive;
+use Illuminate\Support\Facades\File;
 
 class CFEImportService{
 
@@ -305,7 +306,7 @@ class CFEImportService{
                 }
 
                 $comision = $nodosRPU[0];
-                $rpu = (string)$comision['RPU'];
+                $rpu = trim( (string)$comision['RPU'] );
 
                 $isRPU = Servicio::query()->where('rpu', $rpu)->exists();
 
@@ -313,8 +314,24 @@ class CFEImportService{
                 //   2) clsRegArchFact
                 // ============================
                 $nodosCls = $xml->xpath('//clsRegArchFact');
-                if ((!$nodosCls || !isset($nodosCls[0])) && ($isRPU)) {
+                if ((!$nodosCls || !isset($nodosCls[0]))) {
                     $msg = 'No se encontró nodo clsRegArchFact';
+
+                    $resultados[] = [
+                        'status'  => 'error',
+                        'msg'     => $msg,
+                        'file'    => $base,
+                        'rpu'     => $rpu,
+
+                        'archivo' => $base,
+                        'success' => false,
+                        'error'   => $msg,
+                    ];
+                    continue;
+                }
+
+                if (!$isRPU) {
+                    $msg = 'No existe en el catalogo de Servicios';
 
                     $resultados[] = [
                         'status'  => 'error',
@@ -481,7 +498,16 @@ class CFEImportService{
                     'success' => false,
                     'error'   => $ex->getMessage()
                 ];
+            } finally {
+                // 🧹 5. BORRAR SIEMPRE LA CARPETA TEMPORAL
+//                if (is_dir($pathTemporal)) {
+//                    File::deleteDirectory($pathTemporal);
+//                }
             }
+        }
+
+        if (is_dir($pathTemporal)) {
+            File::deleteDirectory($pathTemporal);
         }
 
         return [
