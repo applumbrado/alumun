@@ -24,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
 
         Vite::prefetch(concurrency: 3);
 
+        if($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Inertia::share('periodo_vigente', function () {
 
             $p = Periodo::vigente();
