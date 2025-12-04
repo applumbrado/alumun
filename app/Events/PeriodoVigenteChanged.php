@@ -5,6 +5,7 @@ namespace App\Events;
 use App\Models\CFE\Periodo;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -47,6 +48,7 @@ class PeriodoVigenteChanged implements ShouldBroadcastNow
     public function broadcastOn(){
         // Canal público
         return new Channel('alumun.periodos');
+//        return [new PrivateChannel('alumun.periodos')];
     }
 
     public function broadcastAs(){

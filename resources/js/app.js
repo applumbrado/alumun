@@ -52,10 +52,7 @@ createInertiaApp({
 // 🔔 SUSCRIPCIÓN GLOBAL AL CAMBIO DE PERIODO
 if (window.Echo) {
     console.log('✔ window.Echo está inicializado')
-    window.Echo
-        .channel('alumun.periodos')
-        // 👉 OJO: como usas broadcastAs('PeriodoVigenteChanged'),
-        // se escucha con un punto al inicio:
+    window.Echo.channel('alumun.periodos')
         .listen('.PeriodoVigenteChanged', (e) => {
             console.log('📡 Evento PeriodoVigenteChanged recibido en frontend:', e)
 
