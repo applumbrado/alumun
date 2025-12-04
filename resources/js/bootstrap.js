@@ -27,27 +27,31 @@ window.io = io
 const isLocal = window.location.hostname === 'localhost';
 const echoHost = isLocal ? 'http://localhost:6001' : 'https://alumbrado.villahermosa.gob.mx:6001';
 
-
 window.Echo = new Echo({
     broadcaster: 'socket.io',
-    host: window.location.hostname === 'localhost'
+    host: isLocal
         ? 'http://localhost:6001'
         : 'https://alumbrado.villahermosa.gob.mx:6001',
+    path: '/socket.io',
     transports: ['polling', 'websocket'],  // usa ambos, polling primero
-    forceNew: true,
-    reconnectionAttempts: 10,
-    reconnectionDelay: 20000,
-    timeout: 100000,
-    secure: true,
-    forceTLS: true,
-    rejectUnauthorized: false,
-    auth: {
-        headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token') // si usas tokens
-        }
-    },
+    // forceNew: true,
+    // reconnectionAttempts: 10,
+    // reconnectionDelay: 20000,
+    // timeout: 100000,
+    // secure: true,
+    // forceTLS: true,
+    // rejectUnauthorized: false,
+    // auth: {
+    //     headers: {
+    //         Authorization: 'Bearer ' + localStorage.getItem('token') // si usas tokens
+    //     }
+    // },
 
 });
+
+
+
+
 
 
 
