@@ -48,25 +48,6 @@ createInertiaApp({
     },
 });
 
-
-// 🔔 SUSCRIPCIÓN GLOBAL AL CAMBIO DE PERIODO
-// if (window.Echo) {
-//     console.log('✔ window.Echo está inicializado')
-//     window.Echo.channel('alumun.periodos')
-//         .listen('.PeriodoVigenteChanged', (e) => {
-//             console.log('📡 Evento PeriodoVigenteChanged recibido en frontend:', e)
-//
-//             router.reload({
-//                 only: ['periodo_vigente'],
-//                 preserveScroll: true,
-//                 preserveState: true,
-//             })
-//         })
-// } else {
-//     console.log('❌ window.Echo no está inicializado')
-// }
-
-
 if (window.Echo) {
     console.log('✔ window.Echo está inicializado')
 
@@ -85,15 +66,20 @@ if (window.Echo) {
     console.log('❌ window.Echo no está inicializado')
 }
 
-
-// 🔔 SUSCRIPCIÓN GLOBAL AL CAMBIO DE PERIODO (vía CustomEvent)
-// window.addEventListener('PeriodoVigenteChanged', (evt) => {
-//     const e = evt.detail;
-//     console.log('📡 [app.js] PeriodoVigenteChanged recibido via CustomEvent:', e);
+// 🔔 SUSCRIPCIÓN GLOBAL AL CAMBIO DE PERIODO
+// if (window.Echo) {
+//     console.log('✔ window.Echo está inicializado')
+//     window.Echo.channel('alumun.periodos')
+//         .listen('.PeriodoVigenteChanged', (e) => {
+//             console.log('📡 Evento PeriodoVigenteChanged recibido en frontend:', e)
 //
-//     router.reload({
-//         only: ['periodo_vigente'],
-//         preserveScroll: true,
-//         preserveState: true,
-//     });
-// });
+//             router.reload({
+//                 only: ['periodo_vigente'],
+//                 preserveScroll: true,
+//                 preserveState: true,
+//             })
+//         })
+// } else {
+//     console.log('❌ window.Echo no está inicializado')
+// }
+

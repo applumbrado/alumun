@@ -18,12 +18,6 @@ import io from 'socket.io-client'
 
 window.io = io
 
-// window.Echo = new Echo({
-//     broadcaster: 'socket.io',
-//     host: window.location.hostname + ':6001', // http://localhost:6001
-//     transports: ['polling','websocket'],
-// })
-
 const echoPort = import.meta.env.VITE_ECHO_SERVER_PORT || 6002
 
 const isLocal = window.location.hostname === 'localhost';
@@ -69,10 +63,10 @@ if (window.Echo && window.Echo.connector && window.Echo.connector.socket) {
         console.log('❌ Echo desconectado de Socket.io. Razón:', reason)
     })
 
-    // socket.on('connect_error', (err) => {
-    //     console.error('⚠️ Error de conexión Socket.io:', err)
-    // })
-    //
+    socket.on('connect_error', (err) => {
+        console.error('⚠️ Error de conexión Socket.io:', err)
+    })
+
     socket.on('error', (err) => {
         console.error('🔥 Error Socket.io:', err)
     })

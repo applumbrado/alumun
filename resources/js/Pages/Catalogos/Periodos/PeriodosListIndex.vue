@@ -1,7 +1,7 @@
 <script setup>
 import { router } from '@inertiajs/vue3'
 
-import { ref } from 'vue'
+import {ref, watch} from 'vue'
 import { Head } from '@inertiajs/vue3'
 import axios from 'axios'
 import Swal from 'sweetalert2'
@@ -9,6 +9,9 @@ import Swal from 'sweetalert2'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import DataTableCustom from '@/Components/Ui/DataTableCustom.vue'
 import PeriodoFormModal from "@/Pages/Catalogos/Periodos/PeriodoFormModal.vue";
+import {usePeriodoVigente} from "@/Composables/usePeriodoVigente.js";
+
+const { periodoVigente } = usePeriodoVigente()
 
 const props = defineProps({
     periodos: {
@@ -115,6 +118,19 @@ async function setPredeterminado(item) {
         Swal.fire('Error', 'No se pudo marcar como predeterminado.', 'error')
     }
 }
+
+watch(
+    periodoVigente,
+    (nuevo) => {
+        if (!nuevo) return
+
+        periodos.value = periodos.value.map(p => ({
+            ...p,
+            predeterminado: p.id === nuevo.id,
+        }))
+    },
+    { immediate: false } // 👈 para que al montar ya quede sincronizado
+)
 
 
 
