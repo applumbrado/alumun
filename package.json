@@ -4,7 +4,13 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "echo-server:init": "laravel-echo-server init",
+        "echo-server:start": "laravel-echo-server start",
+        "echo-server:stop": "laravel-echo-server stop",
+        "echo-server:restart": "laravel-echo-server restart",
+        "dev:echo": "concurrently \"npm run dev\" \"laravel-echo-server start\"",
+        "build:echo": "concurrently \"npm run build\" \"laravel-echo-server start\""
     },
     "devDependencies": {
         "@fortawesome/fontawesome-free": "^7.0.1",
@@ -30,8 +36,10 @@
         "@heroicons/vue": "^2.2.0",
         "jquery": "^3.7.1",
         "jszip": "^3.10.1",
+        "socket.io": "^2.5.1",
         "socket.io-client": "^2.4.0",
         "laravel-echo": "^2.2.6",
+        "laravel-echo-server": "^1.6.3",
         "laravel-permission-to-vuejs": "^3.0.8",
         "lodash": "^4.17.21",
         "select2": "^4.1.0-rc.0",
