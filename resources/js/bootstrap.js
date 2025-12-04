@@ -33,7 +33,7 @@ window.Echo = new Echo({
         ? 'http://localhost:6001'
         : 'https://alumbrado.villahermosa.gob.mx:6001',
     path: '/socket.io',
-    transports: ['polling', 'websocket'],  // usa ambos, polling primero
+    transports: ['websocket', 'polling'],  // usa ambos, polling primero
 });
 
 
@@ -56,6 +56,8 @@ if (window.Echo && window.Echo.connector && window.Echo.connector.socket) {
         // Lanzamos un evento de ventana para que lo escuche app.js
         window.dispatchEvent(new CustomEvent('PeriodoVigenteChanged', { detail: payload }));
     });
+
+    const socket = window.Echo.connector.socket
 
     socket.on('connect', () => {
         console.log('✅ Echo conectado a Socket.io')
