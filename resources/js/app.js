@@ -51,6 +51,7 @@ createInertiaApp({
 
 // 🔔 SUSCRIPCIÓN GLOBAL AL CAMBIO DE PERIODO
 if (window.Echo) {
+    console.log('✔ window.Echo está inicializado')
     window.Echo
         .channel('alumun.periodos')
         // 👉 OJO: como usas broadcastAs('PeriodoVigenteChanged'),
@@ -65,5 +66,5 @@ if (window.Echo) {
             })
         })
 } else {
-    console.error('❌ window.Echo no está inicializado')
+    console.log('❌ window.Echo no está inicializado')
 }
