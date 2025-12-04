@@ -24,7 +24,7 @@ window.io = io
 //     transports: ['polling','websocket'],
 // })
 
-const echoPort = import.meta.env.VITE_ECHO_SERVER_PORT || 6001
+const echoPort = import.meta.env.VITE_ECHO_SERVER_PORT || 6002
 
 const isLocal = window.location.hostname === 'localhost';
 const echoHost = isLocal ? 'http://localhost:${echoPort}' : 'https://alumbrado.villahermosa.gob.mx:${echoPort}';
