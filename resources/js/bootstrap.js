@@ -52,19 +52,25 @@ window.Echo = new Echo({
 
 
 // Logs para debug
-if (window.Echo.connector && window.Echo.connector.socket) {
-    const socket = window.Echo.connector.socket
+// if (window.Echo.connector && window.Echo.connector.socket) {
+//     const socket = window.Echo.connector.socket
+//
+//     socket.on('connect', () => {
+//         console.log('✅ Echo conectado a Socket.io')
+//     })
+//
+//     socket.on('disconnect', (reason) => {
+//         console.log('❌ Echo desconectado de Socket.io. Razón:', reason)
+//     })
+//
+//     socket.on('connect_error', (err) => {
+//         console.error('⚠️ Error de conexión Socket.io:', err)
+//     })
+// }
+//
 
-    socket.on('connect', () => {
-        console.log('✅ Echo conectado a Socket.io')
-    })
-
-    socket.on('disconnect', (reason) => {
-        console.log('❌ Echo desconectado de Socket.io. Razón:', reason)
-    })
-
-    socket.on('connect_error', (err) => {
-        console.error('⚠️ Error de conexión Socket.io:', err)
-    })
-}
-
+// 🔍 DEBUG: escuchar evento crudo directamente desde bootstrap
+window.Echo.channel('alumun.periodos')
+    .on('PeriodoVigenteChanged', (e) => {
+        console.log('🟢 [bootstrap] Evento PeriodoVigenteChanged recibido:', e);
+    });
