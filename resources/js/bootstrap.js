@@ -34,47 +34,28 @@ window.Echo = new Echo({
         : 'https://alumbrado.villahermosa.gob.mx:6001',
     path: '/socket.io',
     transports: ['polling', 'websocket'],  // usa ambos, polling primero
-    // forceNew: true,
-    // reconnectionAttempts: 10,
-    // reconnectionDelay: 20000,
-    // timeout: 100000,
-    // secure: true,
-    // forceTLS: true,
-    // rejectUnauthorized: false,
-    // auth: {
-    //     headers: {
-    //         Authorization: 'Bearer ' + localStorage.getItem('token') // si usas tokens
-    //     }
-    // },
-
 });
 
 
 
+// 🔥 Suscripción directa al evento crudo de Socket.io
+if (window.Echo && window.Echo.connector && window.Echo.connector.socket) {
+    const rawSocket = window.Echo.connector.socket;
 
+    // DEBUG: ver TODO lo que entra por el socket
+    const originalOnevent = rawSocket.onevent;
+    rawSocket.onevent = function (packet) {
+        console.log('🔥 RAW SOCKET EVENT:', packet);
+        originalOnevent.call(this, packet);
+    };
 
+    // Escuchar el evento específico que esperamos
+    rawSocket.on('alumun.periodos:PeriodoVigenteChanged', (payload) => {
+        console.log('🟢 [raw] Evento alumun.periodos:PeriodoVigenteChanged recibido:', payload);
 
-
-// Logs para debug
-// if (window.Echo.connector && window.Echo.connector.socket) {
-//     const socket = window.Echo.connector.socket
-//
-//     socket.on('connect', () => {
-//         console.log('✅ Echo conectado a Socket.io')
-//     })
-//
-//     socket.on('disconnect', (reason) => {
-//         console.log('❌ Echo desconectado de Socket.io. Razón:', reason)
-//     })
-//
-//     socket.on('connect_error', (err) => {
-//         console.error('⚠️ Error de conexión Socket.io:', err)
-//     })
-// }
-//
-
-// 🔍 DEBUG: escuchar evento crudo directamente desde bootstrap
-window.Echo.channel('alumun.periodos')
-    .on('PeriodoVigenteChanged', (e) => {
-        console.log('🟢 [bootstrap] Evento PeriodoVigenteChanged recibido:', e);
+        // Lanzamos un evento de ventana para que lo escuche app.js
+        window.dispatchEvent(new CustomEvent('PeriodoVigenteChanged', { detail: payload }));
     });
+} else {
+    console.log('⚠️ No se pudo acceder a window.Echo.connector.socket');
+}
