@@ -9,6 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 /*
  *
@@ -38,6 +39,9 @@ class PeriodoVigenteChanged implements ShouldBroadcastNow
             'anio_mes'       => $periodo->anio_mes,
             'predeterminado' => $periodo->predeterminado,
         ];
+
+        Log::info('Evento PeriodoVigenteChanged disparado', ['id' => $periodo->id]);
+
     }
 
     public function broadcastOn(){

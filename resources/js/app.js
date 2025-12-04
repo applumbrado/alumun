@@ -16,7 +16,12 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-Ziggy.url = 'http://localhost:8000'
+
+const isLocal = window.location.hostname === 'localhost';
+const echoHost = isLocal ? 'http://localhost:8000' : 'https://alumbrado.villahermosa.gob.mx';
+
+// Ziggy.url = 'http://localhost:8000'
+Ziggy.url = echoHost
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
