@@ -53,7 +53,7 @@ createInertiaApp({
 if (window.Echo) {
     console.log('✔ window.Echo está inicializado')
     window.Echo.channel('alumun.periodos')
-        .listen('.PeriodoVigenteChanged', (e) => {
+        .listen('PeriodoVigenteChanged', (e) => {
             console.log('📡 Evento PeriodoVigenteChanged recibido en frontend:', e)
 
             router.reload({
