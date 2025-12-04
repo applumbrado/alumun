@@ -21,7 +21,7 @@ window.io = io
 window.Echo = new Echo({
     broadcaster: 'socket.io',
     host: window.location.hostname + ':6001', // http://localhost:6001
-    transports: ['websocket', 'polling'],
+    transports: ['polling','websocket'],
 })
 
 // Logs para debug
