@@ -33,7 +33,7 @@ window.Echo = new Echo({
         ? 'http://localhost:6001'
         : 'https://alumbrado.villahermosa.gob.mx:6001',
     path: '/socket.io',
-    transports: ['websocket', 'polling'],  // usa ambos, polling primero
+    transports: ['polling'],  // usa ambos, polling primero
 });
 
 
