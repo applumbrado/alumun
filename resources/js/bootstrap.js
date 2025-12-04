@@ -33,8 +33,8 @@ window.Echo = new Echo({
     broadcaster: 'socket.io',
     host: isLocal
         ? `http://localhost:${echoPort}`
-        : 'https://alumbrado.villahermosa.gob.mx:${echoPort}',
-    // path: '/socket.io',
+        : `https://alumbrado.villahermosa.gob.mx:${echoPort}`,
+    path: '/socket.io',
     transports: ['polling','websocket'],  // usa ambos, polling primero
 });
 
