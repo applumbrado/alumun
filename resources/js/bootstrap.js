@@ -24,16 +24,18 @@ window.io = io
 //     transports: ['polling','websocket'],
 // })
 
+const echoPort = import.meta.env.VITE_ECHO_SERVER_PORT || 6001
+
 const isLocal = window.location.hostname === 'localhost';
-const echoHost = isLocal ? 'http://localhost:6001' : 'https://alumbrado.villahermosa.gob.mx:6001';
+const echoHost = isLocal ? 'http://localhost:${echoPort}' : 'https://alumbrado.villahermosa.gob.mx:${echoPort}';
 
 window.Echo = new Echo({
     broadcaster: 'socket.io',
     host: isLocal
-        ? 'http://localhost:6001'
-        : 'https://alumbrado.villahermosa.gob.mx:6001',
-    path: '/socket.io',
-    transports: ['polling'],  // usa ambos, polling primero
+        ? `http://localhost:${echoPort}`
+        : 'https://alumbrado.villahermosa.gob.mx:${echoPort}',
+    // path: '/socket.io',
+    transports: ['polling','websocket'],  // usa ambos, polling primero
 });
 
 
@@ -67,10 +69,10 @@ if (window.Echo && window.Echo.connector && window.Echo.connector.socket) {
         console.log('❌ Echo desconectado de Socket.io. Razón:', reason)
     })
 
-    socket.on('connect_error', (err) => {
-        console.error('⚠️ Error de conexión Socket.io:', err)
-    })
-
+    // socket.on('connect_error', (err) => {
+    //     console.error('⚠️ Error de conexión Socket.io:', err)
+    // })
+    //
     socket.on('error', (err) => {
         console.error('🔥 Error Socket.io:', err)
     })
