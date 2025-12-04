@@ -46,6 +46,9 @@ class PeriodoVigenteChanged implements ShouldBroadcastNow
     }
 
     public function broadcastOn(){
+
+        Log::info('📡 Enviando broadcast en canal alumun.periodos');
+
         // Canal público
         return new Channel('alumun.periodos');
 //        return [new PrivateChannel('alumun.periodos')];

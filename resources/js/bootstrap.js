@@ -56,6 +56,24 @@ if (window.Echo && window.Echo.connector && window.Echo.connector.socket) {
         // Lanzamos un evento de ventana para que lo escuche app.js
         window.dispatchEvent(new CustomEvent('PeriodoVigenteChanged', { detail: payload }));
     });
+
+    socket.on('connect', () => {
+        console.log('✅ Echo conectado a Socket.io')
+    })
+
+    socket.on('disconnect', (reason) => {
+        console.log('❌ Echo desconectado de Socket.io. Razón:', reason)
+    })
+
+    socket.on('connect_error', (err) => {
+        console.error('⚠️ Error de conexión Socket.io:', err)
+    })
+
+    socket.on('error', (err) => {
+        console.error('🔥 Error Socket.io:', err)
+    })
+
+
 } else {
     console.log('⚠️ No se pudo acceder a window.Echo.connector.socket');
 }
