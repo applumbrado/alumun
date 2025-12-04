@@ -18,7 +18,7 @@ use Illuminate\Queue\SerializesModels;
    ShouldBroadcastNow → no requiere queue, por eso “funciona solo”.
  *
  */
-class PeriodoVigenteChanged implements ShouldBroadcast
+class PeriodoVigenteChanged implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
