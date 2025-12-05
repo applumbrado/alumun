@@ -28,8 +28,8 @@
     "file": "assets/AuthenticatedLayout-vSZ8ofsn.css",
     "src": "_AuthenticatedLayout-vSZ8ofsn.css"
   },
-  "_DataTableCustom-BNk5bs40.js": {
-    "file": "assets/DataTableCustom-BNk5bs40.js",
+  "_DataTableCustom-BRoQWZ7z.js": {
+    "file": "assets/DataTableCustom-BRoQWZ7z.js",
     "name": "DataTableCustom",
     "imports": [
       "resources/js/app.js",
@@ -40,12 +40,12 @@
       "_vendor-audFhyMj.js"
     ],
     "css": [
-      "assets/DataTableCustom-CbzeoP1e.css"
+      "assets/DataTableCustom-D9czlLr0.css"
     ]
   },
-  "_DataTableCustom-CbzeoP1e.css": {
-    "file": "assets/DataTableCustom-CbzeoP1e.css",
-    "src": "_DataTableCustom-CbzeoP1e.css"
+  "_DataTableCustom-D9czlLr0.css": {
+    "file": "assets/DataTableCustom-D9czlLr0.css",
+    "src": "_DataTableCustom-D9czlLr0.css"
   },
   "_GuestLayout-Dk0L9GDf.js": {
     "file": "assets/GuestLayout-Dk0L9GDf.js",
@@ -116,7 +116,7 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Dfj_N4ue.css",
+    "file": "assets/app-CCMBfmHf.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -200,25 +200,25 @@
     ]
   },
   "resources/js/Pages/CFE/ImportarArchivosCFE.vue": {
-    "file": "assets/ImportarArchivosCFE-BtH2p1wa.js",
+    "file": "assets/ImportarArchivosCFE-BxttXq8W.js",
     "name": "ImportarArchivosCFE",
     "src": "resources/js/Pages/CFE/ImportarArchivosCFE.vue",
     "isDynamicEntry": true,
     "imports": [
       "_vendor-audFhyMj.js",
-      "_DataTableCustom-BNk5bs40.js",
+      "_DataTableCustom-BRoQWZ7z.js",
       "_AuthenticatedLayout-Bpk7R2RA.js",
       "_ActionButtons-BuFP9Cqe.js",
       "__plugin-vue_export-helper-DlAUqK2U.js",
       "resources/js/app.js"
     ],
     "css": [
-      "assets/ImportarArchivosCFE-Ca6XSmeM.css",
-      "assets/app-Dfj_N4ue.css"
+      "assets/ImportarArchivosCFE-DSEtd3UA.css",
+      "assets/app-CCMBfmHf.css"
     ]
   },
   "resources/js/Pages/Catalogos/Grupos/Index.vue": {
-    "file": "assets/Index-DPXRjmQv.js",
+    "file": "assets/Index-BlPhZjBI.js",
     "name": "Index",
     "src": "resources/js/Pages/Catalogos/Grupos/Index.vue",
     "isDynamicEntry": true,
@@ -227,12 +227,12 @@
       "_useToast-BNTSfoz8.js",
       "_AuthenticatedLayout-Bpk7R2RA.js",
       "_ActionButtons-BuFP9Cqe.js",
-      "_DataTableCustom-BNk5bs40.js",
+      "_DataTableCustom-BRoQWZ7z.js",
       "__plugin-vue_export-helper-DlAUqK2U.js",
       "resources/js/app.js"
     ],
     "css": [
-      "assets/app-Dfj_N4ue.css"
+      "assets/app-CCMBfmHf.css"
     ]
   },
   "resources/js/Pages/Catalogos/Periodos/PeriodoFormModal.vue": {
@@ -245,24 +245,24 @@
     ]
   },
   "resources/js/Pages/Catalogos/Periodos/PeriodosListIndex.vue": {
-    "file": "assets/PeriodosListIndex-Bf1ELg48.js",
+    "file": "assets/PeriodosListIndex-BvWz82cU.js",
     "name": "PeriodosListIndex",
     "src": "resources/js/Pages/Catalogos/Periodos/PeriodosListIndex.vue",
     "isDynamicEntry": true,
     "imports": [
       "_vendor-audFhyMj.js",
       "_AuthenticatedLayout-Bpk7R2RA.js",
-      "_DataTableCustom-BNk5bs40.js",
+      "_DataTableCustom-BRoQWZ7z.js",
       "resources/js/Pages/Catalogos/Periodos/PeriodoFormModal.vue",
       "resources/js/app.js",
       "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/app-Dfj_N4ue.css"
+      "assets/app-CCMBfmHf.css"
     ]
   },
   "resources/js/Pages/Catalogos/Servicios/Index.vue": {
-    "file": "assets/Index-D2WjsJfp.js",
+    "file": "assets/Index-N9aeeAvH.js",
     "name": "Index",
     "src": "resources/js/Pages/Catalogos/Servicios/Index.vue",
     "isDynamicEntry": true,
@@ -271,13 +271,13 @@
       "_useToast-BNTSfoz8.js",
       "_AuthenticatedLayout-Bpk7R2RA.js",
       "_ActionButtons-BuFP9Cqe.js",
-      "_DataTableCustom-BNk5bs40.js",
+      "_DataTableCustom-BRoQWZ7z.js",
       "__plugin-vue_export-helper-DlAUqK2U.js",
       "resources/js/app.js"
     ],
     "css": [
       "assets/Index-DrgpwX5P.css",
-      "assets/app-Dfj_N4ue.css"
+      "assets/app-CCMBfmHf.css"
     ]
   },
   "resources/js/Pages/Dashboard.vue": {
@@ -353,7 +353,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-BexhXX3O.js",
+    "file": "assets/app-900IuJqO.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -380,7 +380,7 @@
       "resources/js/Pages/Welcome.vue"
     ],
     "css": [
-      "assets/app-Dfj_N4ue.css"
+      "assets/app-CCMBfmHf.css"
     ]
   }
 }

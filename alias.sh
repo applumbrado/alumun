@@ -1,8 +1,13 @@
-alias art="php artisan" >> /home/vagrant/.bashrc
-alias migrate="php artisan migrate" >> /home/vagrant/.bashrc
-alias tinker="php artisan tinker" >> /home/vagrant/.bashrc
-alias serve="php artisan serve" >> /home/vagrant/.bashrc
-    
-# Recargar el bashrc
-# source /home/vagrant/.bashrc
+echo -e '
+# Laravel Aliases
+alias art="php artisan"
+alias migrate="php artisan migrate"
+alias tinker="php artisan tinker"
+alias serve="php artisan serve"
+' >> ~/.bashrc
+
+
+# shellcheck disable=SC1090
+#
+
 

@@ -39,6 +39,9 @@ return new class extends Migration
             $table->string('calle_2', 150)->default('');
             $table->string('calle_3', 150)->default('');
             $table->string('alias', 150)->default('');
+            $table->boolean('activo')->default(true)->index();
+            $table->boolean('es_baja')->default(false)->index();
+            $table->date('fecha_baja')->nullable();
             $table->unsignedInteger('grupo_id')->nullable()->index();
             $table->softDeletes();
             $table->timestamps();

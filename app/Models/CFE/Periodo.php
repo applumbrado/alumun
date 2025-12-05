@@ -25,6 +25,8 @@ class Periodo extends Model
         'mes_nombre',
         'tipo',
         'digito',
+        'activo',
+        'bloqueado',
         'predeterminado',
     ];
 
@@ -37,6 +39,8 @@ class Periodo extends Model
         'tipo'          => 'integer',
         'digito'        => 'integer',
         'predeterminado'=> 'boolean',
+        'activo'=> 'boolean',
+        'bloqueado'=> 'boolean',
         'deleted_at'    => 'datetime',
     ];
 

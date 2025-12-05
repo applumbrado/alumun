@@ -87,7 +87,11 @@ class CFEImportController extends Controller
             }
         }
 
-        $recibos = Recibo::orderByDesc('id')
+        $per = periodo_vigente();
+
+        $recibos = Recibo::with('periodo','servicio')
+            ->where('periodo_id', $per->id)
+            ->orderByDesc('id')
             ->get();
 
         return response()->json([
@@ -95,6 +99,7 @@ class CFEImportController extends Controller
             'procesados' => $resultados,
             'recibos'    => $recibos,
         ]);
+
     }
 
 

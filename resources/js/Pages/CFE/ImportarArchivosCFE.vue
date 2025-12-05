@@ -8,6 +8,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import ActionButtons from "@/Components/Ui/ActionButtons.vue";
 import ZipDropzone from "@/Components/ZipDropzone.vue";
+import {usePeriodoVigente} from "@/Composables/usePeriodoVigente.js";
 
 const archivosZip = ref([])
 const progreso = ref(0)           // progreso global (0–100)
@@ -17,10 +18,14 @@ const forceOverwrite = ref(false)       // ✔ checkbox sobrescribir
 const files = ref([])
 const resultados = ref([])              // ✔ aquí guardamos lo que regresa backend
 
+const { labelPeriodoVigente } = usePeriodoVigente()
+
 // Recibos enviados por Laravel (por ejemplo usando Inertia::render)
 const props = defineProps({
     recibos: { type: Array, default: () => [] }
 })
+
+const isSumaryFooter = ref(true)
 
 function handleZipFiles(files) {
     archivosZip.value = files
@@ -190,7 +195,7 @@ async function subirArchivo() {
         <div class="p-6 rounded shadow">
 
             <h1 class="text-xl font-bold mb-4">
-                Importar archivos de CFE – {{ recibosLocal.length }}
+                Importar archivos de CFE – {{ labelPeriodoVigente }}
             </h1>
 
             <!-- DROP ZIP -->
@@ -345,18 +350,18 @@ async function subirArchivo() {
                     :columns="[
                         { label: '🆔', field: 'id', sortable: true },
                         { label: 'RPU', field: 'rpu', sortable: true  },
-                        { label: 'Medidor', field: 'medidor', sortable: true  },
-                        { label: 'Cuenta', field: 'cuenta', sortable: true  },
-                        { label: 'Tarifa', field: 'tarifa', sortable: true  },
                         { label: 'Periodo', field: 'periodo', sortable: true  },
-                        { label: 'Dirección', field: 'direccion', sortable: true  },
-                        { label: 'Subtotal', field: 'subtotal', sortable: true  },
+                        { label: 'Consumo', field: 'consumo', sortable: true, align: 'text-right' },
+                        { label: 'Subtotal', field: 'energia', sortable: true, align:'text-right'  },
                         { label: 'IVA', field: 'iva', sortable: true  },
                         { label: 'Total', field: 'total', sortable: true  },
                     ]"
                     :showSelection="showSelection"
                     :isColActions="isColActions"
                     paginationMode="items"
+                    :footerSummary="true"
+                    :summaryFields="['consumo','energia']"
+                    summary-column="energia"
                 >
                     <template #actions="{ item }">
                         <ActionButtons

@@ -341,7 +341,7 @@ function handleCellClick(item, field) {
                         v-for="col in columns"
                         :key="col.field"
                         class="px-4 py-3 border-b border-white/20 select-none"
-                        :class="{'cursor-pointer hover:bg-white/10 transition': col.sortable}"
+                        :class="[col.sortable ? 'cursor-pointer hover:bg-white/10 transition' : '',col.align || 'text-left']"
                         @click="col.sortable && sortBy(col.field)"
                     >
                         <div class="flex items-center gap-1">
@@ -416,6 +416,39 @@ function handleCellClick(item, field) {
                 </tbody>
 
                 <!-- Table Footer -->
+<!--                <tfoot-->
+<!--                    v-if="props.footerSummary"-->
+<!--                    class="sticky bottom-0 bg-slate-900/70 backdrop-blur-md text-sm font-semibold border-t border-white/10"-->
+<!--                >-->
+<!--                <tr>-->
+<!--                    <td-->
+<!--                        v-for="n in props.fixedColumns"-->
+<!--                        :key="'fixed-' + n"-->
+<!--                        class="px-4 py-3"-->
+<!--                    ></td>-->
+
+<!--                    <td-->
+<!--                        v-for="col in props.columns"-->
+<!--                        :key="col.field"-->
+<!--                        class="px-4 py-3"-->
+<!--                        :class="[-->
+<!--                                col.align || 'text-left',-->
+<!--                                { 'text-green-400 font-bold text-right': col.field === props.summaryColumn }-->
+<!--                            ]"-->
+<!--                    >-->
+<!--                        <template v-if="col.field === props.summaryColumn">-->
+<!--                            💵 {{ Utils.formatCurrency(visibleTotals[props.summaryColumn] || 0) }}-->
+<!--                        </template>-->
+
+<!--                        <template v-else-if="col.field === props.columns[0].field">-->
+<!--                            📊 {{ totalVisibleItems }} registros-->
+<!--                        </template>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                </tfoot>-->
+
+
+
                 <tfoot
                     v-if="props.footerSummary"
                     class="sticky bottom-0 bg-slate-900/70 backdrop-blur-md text-sm font-semibold border-t border-white/10"
@@ -430,22 +463,30 @@ function handleCellClick(item, field) {
                     <td
                         v-for="col in props.columns"
                         :key="col.field"
-                        class="px-4 py-3"
+                        class="px-0 py-3"
                         :class="[
-                                col.align || 'text-left',
-                                { 'text-green-400 font-bold text-right': col.field === props.summaryColumn }
-                            ]"
+            col.align || 'text-left',
+            {
+                'text-green-400 font-bold text-right':
+                    props.summaryFields.includes(col.field)
+            }
+        ]"
                     >
-                        <template v-if="col.field === props.summaryColumn">
-                            💵 {{ Utils.formatCurrency(visibleTotals[props.summaryColumn] || 0) }}
+                        <!-- Si la columna está en summaryFields, mostramos el total de ese campo -->
+                        <template v-if="props.summaryFields.includes(col.field)">
+                            💵 {{ Utils.formatCurrency(visibleTotals[col.field] || 0) }}
                         </template>
 
+                        <!-- En la primera columna mostramos número de registros -->
                         <template v-else-if="col.field === props.columns[0].field">
                             📊 {{ totalVisibleItems }} registros
                         </template>
                     </td>
                 </tr>
                 </tfoot>
+
+
+
             </table>
         </div>
 

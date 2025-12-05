@@ -20,9 +20,9 @@ class ImportServiciosSeeders extends Seeder
     public function run(): void{
 
         $urls = [
-            '/var/www/alumun/otros/2025-10_M0HO_ArchivoPlano.xlsx',
-            '/var/www/alumun/otros/2025-10_M0HP_ArchivoPlano.xlsx',
-            '/var/www/alumun/otros/2025-10_M0HQ_ArchivoPlano.xlsx'
+            'otros/2025-10_M0HO_ArchivoPlano.xlsx',
+            'otros/2025-10_M0HP_ArchivoPlano.xlsx',
+            'otros/2025-10_M0HQ_ArchivoPlano.xlsx'
         ];
 
         foreach ($urls as $path) {

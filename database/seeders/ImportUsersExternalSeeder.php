@@ -24,7 +24,7 @@ class ImportUsersExternalSeeder extends Seeder{
         $host = ""; // gethostbyaddr($ip);
         $idemp = 1;
 
-        $path = '/var/www/alumun/otros/users.xlsx';
+        $path = 'otros/users.xlsx';
         $spreadsheet = IOFactory::load($path);
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray(null, true, true, true);

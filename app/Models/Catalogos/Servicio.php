@@ -28,8 +28,18 @@ class Servicio extends Model
         'calle_2',
         'calle_3',
         'alias',
+        'activo',
+        'es_baja',
+        'fecha_baja',
         'grupo_id'
     ];
+
+    protected $casts = [
+        'activo'      => 'boolean',
+        'es_baja'     => 'boolean',
+        'fecha_baja'  => 'date',
+    ];
+
 
     public function grupo()
     {

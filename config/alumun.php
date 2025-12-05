@@ -89,6 +89,7 @@ return [
             'grupos'                 => 'grupos',
             'periodos'               => 'periodos',
             'recibos'                => 'recibos',
+            'expedientes'            => 'expedientes',
         ],
 
     ],

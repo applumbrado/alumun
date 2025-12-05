@@ -11,32 +11,52 @@ return new class extends Migration {
 
         Schema::create('periodos', function (Blueprint $table) {
            $table->id();
-            $table->string('anomes')->unique();
+            $table->string('anomes')->default('')->index();
             $table->unsignedInteger('ano')->default(0)->index();
             $table->unsignedInteger('mes')->default(0)->index();
             $table->string('mes_nombre',20)->default('');
             $table->smallInteger('tipo')->default(0);
             $table->smallInteger('digito')->default(0);
             $table->boolean('predeterminado')->default(false)->index();
+            $table->boolean('activo')->default(true)->index();
+            $table->boolean('bloqueado')->default(false)->index();
             $table->softDeletes();
             $table->timestamps();
-            $table->unique(['anomes', 'ano', 'mes', 'tipo']);
+            $table->unique(['ano', 'mes', 'tipo']);
 
         });
 
         Schema::create('recibos', function (Blueprint $table)  use ($Catalogos){
             $table->id();
-            $table->string('rpu')->nullable();
-            $table->string('medidor')->nullable();
-            $table->string('cuenta')->nullable();
-            $table->string('tarifa')->nullable();
-            $table->string('periodo')->nullable();
-            $table->text('direccion')->nullable();
-            $table->decimal('subtotal', 10, 2)->default(0);
-            $table->decimal('iva', 10, 2)->default(0);
+            $table->string('rpu')->default('')->index();
+            $table->string('medidor')->default('');
+            $table->string('cuenta')->default('');
+            $table->string('tarifa')->default('');
+            $table->string('periodo')->default('');
+            $table->text('direccion')->default('');
+            $table->date('desde')->nullable()->default(null);
+            $table->date('hasta')->nullable()->default(null);
+
+            $table->decimal('consumo', 12, 2)->default(0);
+            $table->decimal('demanda', 12, 2)->default(0);
+            $table->decimal('reactivos', 12, 2)->default(0);
+            $table->decimal('factor_potencia', 12, 2)->default(0);
+            $table->decimal('factor_carga', 12, 2)->default(0);
+
+            $table->decimal('energia', 12, 2)->default(0);
+            $table->decimal('iva', 12, 2)->default(0);
+            $table->decimal('dap', 12, 2)->default(0);
+            $table->decimal('cargos_y_depositos', 12, 2)->default(0);
+            $table->decimal('creditos_y_redondeos', 12, 2)->default(0);
             $table->decimal('total', 10, 2)->default(0);
+            $table->decimal('validacion_total', 10, 2)->default(0);
+            $table->decimal('diferencia', 10, 2)->default(0);
             $table->unsignedInteger('periodo_id')->nullable()->index();
             $table->unsignedInteger('servicio_id')->nullable()->index();
+            $table->string('xml_file')->default('');
+            $table->string('pdf_file')->default('');
+            $table->boolean('activo')->default(true)->index();
+            $table->boolean('bloqueado')->default(false)->index();
             $table->softDeletes();
             $table->timestamps();
 
@@ -51,9 +71,45 @@ return new class extends Migration {
                 ->onDelete('set null');
 
         });
-    }
+
+        Schema::create('expedientes', function (Blueprint $table)  use ($Catalogos){
+            $table->id();
+            $table->string('archivo_de_cuadre_1')->default('');
+            $table->string('archivo_de_cuadre_2')->default('');
+            $table->string('archivo_de_cuadre_3')->default('');
+            $table->string('archivo_de_factura_1')->default('');
+            $table->string('archivo_de_factura_2')->default('');
+            $table->string('archivo_de_factura_3')->default('');
+            $table->string('ruta_recibos')->default('');
+            $table->unsignedInteger('periodo_id')->nullable()->index();
+            $table->unsignedInteger('recibo_id')->nullable()->index();
+            $table->softDeletes();
+            $table->timestamps();
+
+            $table->foreign('periodo_id')
+                ->references('id')
+                ->on($Catalogos['periodos'])
+                ->onDelete('set null');
+
+            $table->foreign('recibo_id')
+                ->references('id')
+                ->on($Catalogos['recibos'])
+                ->onDelete('set null');
+
+        });
+
+
+
+
+
+
+
+
+
+        }
 
     public function down(){
+        Schema::dropIfExists('expedientes');
         Schema::dropIfExists('recibos');
         Schema::dropIfExists('periodos');
     }
