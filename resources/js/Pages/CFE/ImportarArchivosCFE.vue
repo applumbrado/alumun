@@ -355,6 +355,8 @@ async function subirArchivo() {
                         { label: 'Subtotal', field: 'energia', sortable: true, align:'text-right'  },
                         { label: 'IVA', field: 'iva', sortable: true  },
                         { label: 'Total', field: 'total', sortable: true  },
+                        { label: 'PDF', field: 'pdf_file', sortable: false  },
+                        { label: 'XML', field: 'xml_file', sortable: false  },
                     ]"
                     :showSelection="showSelection"
                     :isColActions="isColActions"
@@ -368,6 +370,33 @@ async function subirArchivo() {
                             :onEdit="() => openEdit(item)"
                             :onDelete="() => destroyItem(item)"
                         />
+                    </template>
+                    <!-- Celda PDF -->
+                    <template #pdf_file="{ item }">
+                        <a
+                            v-if="item.pdf_url"
+                            :href="item.pdf_url"
+                            target="_blank"
+                            class="inline-flex items-center gap-1 text-rose-400 hover:text-rose-300 underline"
+                        >
+                            <i class="fa-regular fa-file-pdf"></i>
+                            <span>PDF</span>
+                        </a>
+                        <span v-else class="text-slate-500 text-xs italic">Sin PDF</span>
+                    </template>
+
+                    <!-- Celda XML -->
+                    <template #xml_file="{ item }">
+                        <a
+                            v-if="item.xml_url"
+                            :href="item.xml_url"
+                            target="_blank"
+                            class="inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 underline"
+                        >
+                            <i class="fa-regular fa-file-code"></i>
+                            <span>XML</span>
+                        </a>
+                        <span v-else class="text-slate-500 text-xs italic">Sin XML</span>
                     </template>
                 </DataTableCustom>
             </div>
