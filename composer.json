@@ -43,8 +43,7 @@
             "Tests\\": "tests/"
         },
         "files": [
-            "app/Support/helpers.php",
-            "alias.sh"
+            "app/Helpers/helpers.php"
         ]
     },
     "scripts": {

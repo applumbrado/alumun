@@ -27,7 +27,7 @@ class PeriodosController extends Controller{
         $data = $this->validatePeriodo($request);
 
         // Generar ANOMES y nombre de mes si no viene
-        $data['anomes'] = sprintf('%04d%02d', $data['ano'], $data['mes']);
+        $data['periodo'] = sprintf('%04d%02d', $data['ano'], $data['mes']);
         if (empty($data['mes_nombre'])) {
             $data['mes_nombre'] = Periodo::nombreMes($data['mes']);
         }
@@ -49,7 +49,7 @@ class PeriodosController extends Controller{
     {
         $data = $this->validatePeriodo($request, $periodo->id);
 
-        $data['anomes'] = sprintf('%04d%02d', $data['ano'], $data['mes']);
+        $data['periodo'] = sprintf('%04d%02d', $data['ano'], $data['mes']);
         if (empty($data['mes_nombre'])) {
             $data['mes_nombre'] = Periodo::nombreMes($data['mes']);
         }

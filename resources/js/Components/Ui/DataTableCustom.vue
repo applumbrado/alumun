@@ -14,7 +14,7 @@ const props = defineProps({
     isColActions:{ type: Boolean, default: false },
     selectableField: { type: String, default: 'id' },
     paginationMode: { type: String, default: 'day' }, // 'day' o 'items'
-    itemsPerPageOptions: { type: Array, default: () => [10, 25, 50, 100,250,500,1000] },
+    itemsPerPageOptions: { type: Array, default: () => [10, 25, 50, 100,250,500,1000,2500,5000,10000] },
     selected: {
         type: Array,
         default: () => []

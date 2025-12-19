@@ -11,7 +11,7 @@ return new class extends Migration {
 
         Schema::create('periodos', function (Blueprint $table) {
            $table->id();
-            $table->string('anomes')->default('')->index();
+            $table->string('periodo')->default('')->index();
             $table->unsignedInteger('ano')->default(0)->index();
             $table->unsignedInteger('mes')->default(0)->index();
             $table->string('mes_nombre',20)->default('');
@@ -29,10 +29,10 @@ return new class extends Migration {
         Schema::create('recibos', function (Blueprint $table)  use ($Catalogos){
             $table->id();
             $table->string('rpu')->default('')->index();
+            $table->string('periodo')->default('')->index()->comment('Se obtiene de la tabla Periodos');
             $table->string('medidor')->default('');
             $table->string('cuenta')->default('');
             $table->string('tarifa')->default('');
-            $table->string('periodo')->default('');
             $table->text('direccion')->default('');
             $table->date('desde')->nullable()->default(null);
             $table->date('hasta')->nullable()->default(null);
@@ -44,17 +44,25 @@ return new class extends Migration {
             $table->decimal('factor_carga', 12, 2)->default(0);
 
             $table->decimal('energia', 12, 2)->default(0);
+            $table->decimal('subtotal', 12, 2)->default(0);
             $table->decimal('iva', 12, 2)->default(0);
             $table->decimal('dap', 12, 2)->default(0);
             $table->decimal('cargos_y_depositos', 12, 2)->default(0);
             $table->decimal('creditos_y_redondeos', 12, 2)->default(0);
-            $table->decimal('total', 10, 2)->default(0);
             $table->decimal('validacion_total', 10, 2)->default(0);
             $table->decimal('diferencia', 10, 2)->default(0);
+            $table->decimal('total', 10, 2)->default(0);
+            $table->decimal('total_recibo', 10, 2)->default(0);
             $table->unsignedInteger('periodo_id')->nullable()->index();
             $table->unsignedInteger('servicio_id')->nullable()->index();
             $table->string('xml_file')->default('');
             $table->string('pdf_file')->default('');
+            $table->boolean('rpu_ok')->default(false)->index();
+            $table->boolean('periodo_ok')->default(false)->index();
+            $table->boolean('total_ok')->default(false)->index();
+            $table->boolean('consumo_ok')->default(false)->index();
+            $table->boolean('desde_ok')->default(false)->index();
+            $table->boolean('hasta_ok')->default(false)->index();
             $table->boolean('activo')->default(true)->index();
             $table->boolean('bloqueado')->default(false)->index();
             $table->softDeletes();

@@ -14,7 +14,11 @@ class CFEImportController extends Controller
 
     public function index(){
 
-        $recibos = Recibo::query()->orderByDesc('id')->get();
+        $pv = periodo_vigente()->id;
+
+//        dd($pv);
+
+        $recibos = Recibo::query()->where('periodo_id',$pv)->orderByDesc('id')->get();
 
 
 //        dd($recibos);

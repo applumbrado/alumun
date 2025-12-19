@@ -19,7 +19,8 @@ class Periodo extends Model
      * Nota: normalmente NO se incluye el id en $fillable.
      */
     protected $fillable = [
-        'anomes',
+        'id',
+        'periodo',
         'ano',
         'mes',
         'mes_nombre',
@@ -125,7 +126,7 @@ class Periodo extends Model
 
         return static::firstOrCreate(
             [
-                'anomes' => $anomes,
+                'periodo' => $anomes,
                 'ano'    => $ano,
                 'mes'    => $mes,
                 'tipo'   => $tipo,

@@ -40,6 +40,86 @@ const isColActions = ref(true);
 const MAX_FILES_PER_REQUEST = 5
 
 
+// 🎨 Paleta de estilos (se recicla si hay más mensajes que colores)
+const MSG_PALETTE = [
+    'bg-emerald-500/15 text-emerald-200 border-emerald-400/30',
+    'bg-sky-500/15 text-sky-200 border-sky-400/30',
+    'bg-violet-500/15 text-violet-200 border-violet-400/30',
+    'bg-amber-500/15 text-amber-200 border-amber-400/30',
+    'bg-fuchsia-500/15 text-fuchsia-200 border-fuchsia-400/30',
+    'bg-teal-500/15 text-teal-200 border-teal-400/30',
+    'bg-lime-500/15 text-lime-200 border-lime-400/30',
+    'bg-orange-500/15 text-orange-200 border-orange-400/30',
+    'bg-cyan-500/15 text-cyan-200 border-cyan-400/30',
+    'bg-rose-500/15 text-rose-200 border-rose-400/30',
+]
+
+// Mapa reactivo: "mensaje" => "clases tailwind"
+const msgStyleMap = ref({})
+
+function getMessageText(item) {
+    return item?.msg || item?.mensaje || item?.error || item?.skipped || 'Sin mensaje'
+}
+
+function getMsgClasses(item) {
+    const key = getMessageText(item)
+
+    // si aún no existe asignación, asigna el siguiente color
+    if (!msgStyleMap.value[key]) {
+        const used = Object.keys(msgStyleMap.value).length
+        msgStyleMap.value[key] = MSG_PALETTE[used % MSG_PALETTE.length]
+    }
+
+    return msgStyleMap.value[key]
+}
+
+function getStatusMeta(item) {
+    const st = item?.status || (item?.success ? 'ok' : 'error')
+
+    switch (st) {
+        case 'created':
+            return { label: 'Creado', cls: 'bg-emerald-700 text-white', icon: '✔' }
+        case 'updated':
+            return { label: 'Actualizado', cls: 'bg-sky-700 text-white', icon: '↻' }
+        case 'skipped':
+            return { label: 'Omitido', cls: 'bg-amber-300 text-gray-900', icon: '⏭' }
+        default:
+            if (item?.success) return { label: 'OK', cls: 'bg-green-700 text-white', icon: '✔' }
+            return { label: 'Error', cls: 'bg-red-700 text-white', icon: '✖' }
+    }
+}
+
+function getOcr(item) {
+    const o = item?.ocr ?? {}
+    return {
+        aamm: item?.OCR_AAMM ?? o.OCR_AAMM ?? null,
+        aaaa: item?.OCR_AAAA ?? o.OCR_AAAA ?? null,
+        mm: item?.OCR_MM ?? o.OCR_MM ?? null,
+        mmNom: item?.OCR_MM_NOM ?? o.OCR_MM_NOM ?? null,
+        tipo: item?.OCR_TIPO ?? o.OCR_TIPO ?? null,
+        digito: item?.OCR_DIGITO ?? o.OCR_DIGITO ?? null,
+    }
+}
+
+function getPeriodoActivo(item) {
+    const p = item?.periodo_activo ?? {}
+    return {
+        aaaa: item?.anio_activo ?? p.ano ?? null,
+        mm: item?.mes_activo ?? p.mes ?? null,
+    }
+}
+
+function hasOcr(item) {
+    const o = getOcr(item)
+    return !!(o.aaaa || o.mm || o.aamm || o.tipo || o.digito)
+}
+
+function pad2(v) {
+    if (v === null || v === undefined || v === '') return ''
+    return String(v).padStart(2, '0')
+}
+
+
 async function subirArchivo() {
     if (!archivosZip.value.length) {
         return Swal.fire({
@@ -70,52 +150,6 @@ async function subirArchivo() {
     progresoPorArchivo.value = {}
 
     try {
-        // const formData = new FormData()
-        //
-        // archivosZip.value.forEach(file => {
-        //     formData.append('archivos[]', file)
-        // })
-        //
-        // formData.append('forceOverwrite', forceOverwrite.value ? 1 : 0)
-        //
-        // const { data } = await axios.post(route('cfe.importar'), formData, {
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data'
-        //     },
-        //
-        //     // 🚀 AQUÍ SE ACTUALIZA EL PROGRESO
-        //     onUploadProgress: function (progressEvent) {
-        //
-        //         // progreso total
-        //         const porcentaje = Math.round(
-        //             (progressEvent.loaded * 100) / progressEvent.total
-        //         )
-        //         progreso.value = porcentaje
-        //
-        //         // progreso por archivo (estimado por peso relativo)
-        //         const totalSize = archivosZip.value.reduce((a, f) => a + f.size, 0)
-        //         let cargado = progressEvent.loaded
-        //
-        //         archivosZip.value.forEach(file => {
-        //             // proporción del archivo relativo al total
-        //             const porcentajeEstimado = Math.min(
-        //                 100,
-        //                 Math.round((cargado / totalSize) * 100)
-        //             )
-        //             progresoPorArchivo.value[file.name] = porcentajeEstimado
-        //         })
-        //     }
-        // })
-        //
-        // resultados.value = data.procesados
-        //
-        // recibosLocal.value = data.recibos ? data.recibos : []
-        //
-        // Swal.fire({
-        //     icon: 'success',
-        //     title: 'Importación completa',
-        //     timer: 2000
-        // })
 
 
         const totalFiles = archivosZip.value.length
@@ -206,27 +240,31 @@ async function subirArchivo() {
                 @files="handleZipFiles"
             />
 
-            <!-- Barra por archivo -->
-<!--            <div v-if="Object.keys(progresoPorArchivo).length" class="mt-4 space-y-3">-->
+            <!-- Switch sobrescribir -->
+            <div class="flex items-center justify-between gap-4 mb-4 p-3 rounded-lg border border-white/10 bg-black/20">
+                <div class="flex flex-col">
+                    <span class="text-sm font-medium text-white">
+                        Sobrescribir registros existentes
+                    </span>
+                                <span class="text-xs text-slate-400">
+                        Si está apagado, los duplicados se omiten y solo se reparan archivos faltantes.
+                    </span>
+                </div>
 
-<!--                <div v-for="(porc, nombre) in progresoPorArchivo" :key="nombre">-->
-<!--                    <p class="text-white text-xs mb-1">{{ nombre }} — {{ porc }}%</p>-->
-
-<!--                    <div class="w-full h-2 bg-gray-700 rounded overflow-hidden">-->
-<!--                        <div class="h-2 bg-blue-500 transition-all duration-200"-->
-<!--                             :style="{ width: porc + '%' }"></div>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-<!--            </div>-->
-
-            <!-- Checkbox sobrescribir -->
-            <label class="flex items-center gap-2 mb-4 cursor-pointer">
-                <input type="checkbox" v-model="forceOverwrite" />
-                <span class="text-sm text-gray-700">
-                    Sobrescribir registros existentes
-                </span>
-            </label>
+                <button
+                    type="button"
+                    role="switch"
+                    :aria-checked="forceOverwrite"
+                    @click="forceOverwrite = !forceOverwrite"
+                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black"
+                    :class="forceOverwrite ? 'bg-emerald-500/80' : 'bg-slate-600/60'"
+                >
+                    <span
+                        class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform duration-200"
+                        :class="forceOverwrite ? 'translate-x-5' : 'translate-x-1'"
+                    />
+                </button>
+            </div>
 
             <!-- Botón subir -->
             <button
@@ -254,7 +292,6 @@ async function subirArchivo() {
                 </div>
             </div>
 
-            <!-- Resultados bonitos -->
             <!-- =======================================
                  RESULTADOS DEL PROCESO
             ======================================= -->
@@ -270,25 +307,25 @@ async function subirArchivo() {
                          @click="zip.open = !zip.open">
 
                         <div class="flex flex-col">
-                <span class="text-lg font-semibold text-white">
-                    {{ zip.zip }}
-                </span>
+                            <span class="text-lg font-semibold text-white">
+                                {{ zip.zip }}
+                            </span>
 
-                            <span class="text-sm text-slate-400">
-                    {{ zip.procesados.length }} XML encontrados
-                </span>
-                        </div>
+                                        <span class="text-sm text-slate-400">
+                                {{ zip.procesados.length }} XML encontrados
+                            </span>
+                                    </div>
 
-                        <div>
-                <span v-if="zip.procesados.every(x => x.success)"
-                      class="px-3 py-1 text-sm rounded bg-green-600 text-white">
-                    ✔ Completado
-                </span>
+                                    <div>
+                            <span v-if="zip.procesados.every(x => x.success)"
+                                  class="px-3 py-1 text-sm rounded bg-green-600 text-white">
+                                ✔ Completado
+                            </span>
 
-                            <span v-else
-                                  class="px-3 py-1 text-sm rounded bg-red-600 text-white">
-                    ⚠ Con Errores
-                </span>
+                                        <span v-else
+                                              class="px-3 py-1 text-sm rounded bg-red-600 text-white">
+                                ⚠ Con Errores
+                            </span>
                         </div>
                     </div>
 
@@ -314,23 +351,41 @@ async function subirArchivo() {
                                     </td>
 
                                     <td class="py-2">
-                            <span v-if="item.success"
-                                  class="px-2 py-1 rounded text-xs bg-green-700 text-white">
-                                ✔ OK
-                            </span>
-
-                                        <span v-else
-                                              class="px-2 py-1 rounded text-xs bg-red-700 text-white">
-                                ✖ Error
-                            </span>
+                                        <span
+                                            class="px-2 py-1 rounded text-xs inline-flex items-center gap-1"
+                                            :class="getStatusMeta(item).cls"
+                                        >
+                                            <span>{{ getStatusMeta(item).icon }}</span>
+                                            <span>{{ getStatusMeta(item).label }}</span>
+                                        </span>
                                     </td>
 
-                                    <td class="py-2 text-slate-300">
-                                        {{ item.mensaje || item.error }}
+                                    <td class="py-2">
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs border"
+                                            :class="getMsgClasses(item)"
+                                        >
+                                            {{ getMessageText(item) }}
+                                        </span>
+
+                                        <!-- Extra opcional: cuando venga fuera de periodo, muestra OCR -->
+                                        <div v-if="item?.status === 'skipped' && hasOcr(item)" class="mt-1 text-xs text-slate-400">
+                                            <span>
+                                                Archivo:
+                                                {{ getOcr(item).aaaa }}-{{ pad2(getOcr(item).mm) }}
+                                                <template v-if="getOcr(item).tipo"> • Tipo: {{ getOcr(item).tipo }}</template>
+                                                <template v-if="getOcr(item).digito"> • Dígito: {{ getOcr(item).digito }}</template>
+                                            </span>
+
+                                            <span v-if="getPeriodoActivo(item).aaaa || getPeriodoActivo(item).mm">
+                                                • Activo: {{ getPeriodoActivo(item).aaaa }}-{{ pad2(getPeriodoActivo(item).mm) }}
+                                            </span>
+                                        </div>
                                     </td>
 
                                 </tr>
                                 </tbody>
+
 
                             </table>
 

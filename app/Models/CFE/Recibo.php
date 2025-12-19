@@ -19,6 +19,7 @@ class Recibo extends Model
      * (No incluimos id, created_at, updated_at, deleted_at)
      */
     protected $fillable = [
+        'id',
         'rpu',
         'medidor',
         'cuenta',
@@ -35,12 +36,14 @@ class Recibo extends Model
         'factor_carga',
 
         'energia',
+        'subtotal',
         'iva',
         'dap',
         'cargos_y_depositos',
         'creditos_y_redondeos',
         'total',
         'validacion_total',
+        'total_recibo',
         'diferencia',
 
         'periodo_id',
@@ -48,6 +51,13 @@ class Recibo extends Model
 
         'xml_file',
         'pdf_file',
+
+        'rpu_ok',
+        'periodo_ok',
+        'total_ok',
+        'consumo_ok',
+        'desde_ok',
+        'hasta_ok',
 
         'activo',
         'bloqueado',
@@ -67,16 +77,25 @@ class Recibo extends Model
         'factor_carga'        => 'decimal:2',
 
         'energia'             => 'decimal:2',
+        'subtotal'            => 'decimal:2',
         'iva'                 => 'decimal:2',
         'dap'                 => 'decimal:2',
         'cargos_y_depositos'  => 'decimal:2',
         'creditos_y_redondeos'=> 'decimal:2',
         'total'               => 'decimal:2',
         'validacion_total'    => 'decimal:2',
+        'total_recibo'        => 'decimal:2',
         'diferencia'          => 'decimal:2',
 
         'periodo_id'          => 'integer',
         'servicio_id'         => 'integer',
+
+        'rpu_ok'              => 'boolean',
+        'periodo_ok'          => 'boolean',
+        'total_ok'            => 'boolean',
+        'consumo_ok'          => 'boolean',
+        'desde_ok'            => 'boolean',
+        'hasta_ok'            => 'boolean',
 
         'activo'              => 'boolean',
         'bloqueado'           => 'boolean',
@@ -102,10 +121,12 @@ class Recibo extends Model
             // validacion_total = energia + iva + dap + cargos_y_depositos + creditos_y_redondeos
             $recibo->validacion_total =
                 (float) $recibo->energia +
-                (float) $recibo->iva +
-                (float) $recibo->dap +
-                (float) $recibo->cargos_y_depositos +
-                (float) $recibo->creditos_y_redondeos;
+                (float) $recibo->iva+
+            (float) $recibo->dap +
+            (float) $recibo->cargos_y_depositos;
+
+//            (float) $recibo->creditos_y_redondeos;
+
 
             // diferencia = validacion_total - total
             $recibo->diferencia = (float) $recibo->validacion_total - (float) $recibo->total;
