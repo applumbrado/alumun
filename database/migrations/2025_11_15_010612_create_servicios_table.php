@@ -4,11 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
+
     public function up(): void{
 
         $Catalogos = config('alumun.table_names.catalogos');
@@ -39,6 +36,9 @@ return new class extends Migration
             $table->string('calle_2', 150)->default('');
             $table->string('calle_3', 150)->default('');
             $table->string('alias', 150)->default('');
+            $table->unsignedInteger('promedio')->default(0);
+            $table->unsignedInteger('promedio_minimo')->default(0);
+            $table->unsignedInteger('promedio_maximo')->default(0);
             $table->boolean('activo')->default(true)->index();
             $table->boolean('es_baja')->default(false)->index();
             $table->date('fecha_baja')->nullable();
@@ -56,11 +56,9 @@ return new class extends Migration
 
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void{
         Schema::dropIfExists('servicios');
         Schema::dropIfExists('grupos');
     }
+
 };

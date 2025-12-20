@@ -18,7 +18,7 @@ class CFEImportController extends Controller
 
 //        dd($pv);
 
-        $recibos = Recibo::query()->where('periodo_id',$pv)->orderByDesc('id')->get();
+        $recibos = Recibo::query()->DelPeriodoVigente()->orderByDesc('id')->get();
 
 
 //        dd($recibos);

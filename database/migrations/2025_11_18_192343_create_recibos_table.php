@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(){
+
+    public function up():void {
 
         $Catalogos = config('alumun.table_names.catalogos');
 
@@ -22,7 +23,7 @@ return new class extends Migration {
             $table->boolean('bloqueado')->default(false)->index();
             $table->softDeletes();
             $table->timestamps();
-            $table->unique(['ano', 'mes', 'tipo']);
+            $table->unique(['ano', 'mes']);
 
         });
 
@@ -30,6 +31,7 @@ return new class extends Migration {
             $table->id();
             $table->string('rpu')->default('')->index();
             $table->string('periodo')->default('')->index()->comment('Se obtiene de la tabla Periodos');
+            $table->string('periodo_extend')->default('');
             $table->string('medidor')->default('');
             $table->string('cuenta')->default('');
             $table->string('tarifa')->default('');
@@ -67,6 +69,7 @@ return new class extends Migration {
             $table->boolean('bloqueado')->default(false)->index();
             $table->softDeletes();
             $table->timestamps();
+            $table->unique(['rpu','periodo','periodo_id']);
 
             $table->foreign('periodo_id')
                 ->references('id')
@@ -89,21 +92,61 @@ return new class extends Migration {
             $table->string('archivo_de_factura_2')->default('');
             $table->string('archivo_de_factura_3')->default('');
             $table->string('ruta_recibos')->default('');
-            $table->unsignedInteger('periodo_id')->nullable()->index();
             $table->unsignedInteger('recibo_id')->nullable()->index();
+            $table->unsignedInteger('periodo_id')->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
-
-            $table->foreign('periodo_id')
-                ->references('id')
-                ->on($Catalogos['periodos'])
-                ->onDelete('set null');
+            $table->unique(['recibo_id','periodo_id']);
 
             $table->foreign('recibo_id')
                 ->references('id')
                 ->on($Catalogos['recibos'])
                 ->onDelete('set null');
 
+
+            $table->foreign('periodo_id')
+                ->references('id')
+                ->on($Catalogos['periodos'])
+                ->onDelete('set null');
+        });
+
+        Schema::create('conceptos', function (Blueprint $table)  use ($Catalogos){
+            $table->id();
+            $table->string('concepto1')->default('');
+            $table->float('importe1',10,2)->default(0);
+            $table->string('concepto2')->default('');
+            $table->float('importe2',10,2)->default(0);
+            $table->string('concepto3')->default('');
+            $table->float('importe3',10,2)->default(0);
+            $table->string('concepto4')->default('');
+            $table->float('importe4',10,2)->default(0);
+            $table->string('concepto5')->default('');
+            $table->float('importe5',10,2)->default(0);
+            $table->string('concepto6')->default('');
+            $table->float('importe6',10,2)->default(0);
+            $table->string('concepto7')->default('');
+            $table->float('importe7',10,2)->default(0);
+            $table->string('concepto8')->default('');
+            $table->float('importe8',10,2)->default(0);
+            $table->string('concepto9')->default('');
+            $table->float('importe9',10,2)->default(0);
+            $table->string('concepto10')->default('');
+            $table->float('importe10',10,2)->default(0);
+            $table->unsignedInteger('recibo_id')->nullable()->index();
+            $table->unsignedInteger('periodo_id')->nullable()->index();
+            $table->softDeletes();
+            $table->timestamps();
+            $table->unique(['recibo_id','periodo_id']);
+
+            $table->foreign('recibo_id')
+                ->references('id')
+                ->on($Catalogos['recibos'])
+                ->onDelete('set null');
+
+            $table->foreign('periodo_id')
+                ->references('id')
+                ->on($Catalogos['periodos'])
+                ->onDelete('set null');
         });
 
 
@@ -114,11 +157,15 @@ return new class extends Migration {
 
 
 
-        }
 
-    public function down(){
+
+
+    }
+
+    public function down():void {
         Schema::dropIfExists('expedientes');
         Schema::dropIfExists('recibos');
         Schema::dropIfExists('periodos');
     }
+
 };

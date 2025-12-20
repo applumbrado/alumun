@@ -2,6 +2,7 @@
 
 namespace App\Services\CFE;
 
+use App\Helpers\CfeXmlCI;
 use App\Models\Catalogos\Servicio;
 use App\Models\CFE\Periodo;
 use App\Models\CFE\Recibo;
@@ -75,6 +76,12 @@ class CFEImportService{
                 }
 
                 // 2) Parsear XML
+                // $xmlContent = mb_convert_encoding($xmlContent, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+
+                // ✅ NORMALIZAR XML A UTF-8 ANTES DE PARSEAR
+                $xmlContent = $this->normalizeXmlToUtf8($xmlContent);
+
+
                 $xml = @simplexml_load_string($xmlContent, 'SimpleXMLElement', LIBXML_NOERROR | LIBXML_NOWARNING);
                 if ($xml === false) {
                     $resultados[] = [
@@ -215,7 +222,7 @@ class CFEImportService{
                 // Buscar duplicado en BD
                 // ============================
                 $existente = Recibo::where('rpu', $rpu)
-                    ->where('periodo', $periodoStr)
+                    ->where('periodo_id', $periodo->id)
                     ->first();
 
                 $xmlDb = $existente?->xml_file;
@@ -288,11 +295,6 @@ class CFEImportService{
                     (string)($cls->NOMESTR ?? '')
                 );
 
-//                $desdeRaw = (string)($cls->FECDESDE ?? ''); // "04 SEP 25"
-//                $hastaRaw = (string)($cls->FECHASTA ?? ''); // "07 OCT 25"
-//
-//                $periodoStr = trim($desdeRaw . ' - ' . $hastaRaw);
-//
                 // ✅ ahora sí quedan como fechas YYYY-MM-DD (o null si no se pudo)
                 $desde = parseCfePeriodoFecha($desdeRaw);
                 $hasta = parseCfePeriodoFecha($hastaRaw);
@@ -304,7 +306,9 @@ class CFEImportService{
                 $factor_potencia = (float)($cls->FacPot ?? 0);
                 $factor_carga    = (float)($cls->CARGA_CONECTADA ?? 0);
 
+
                 $energia = (float)($cls->SubTotal ?? 0);
+                $subtotal = (float)($cls->SubTotal ?? 0);
                 $iva     = (float)($cls->IMPIVA ?? 0);
                 $dap     = (float)($cls->IMPDAP ?? 0);
                 $cargos_y_depositos = (float)($cls->ADEANT ?? 0);
@@ -439,14 +443,39 @@ class CFEImportService{
 
                 $periodo_id = $periodo->id;
 
+                $arrConceptos = collect(CfeXmlCI::conceptosMap($xml))
+                    ->mapWithKeys(fn ($item, $i) => ["concepto{$i}" => $item])
+                    ->toArray();
+
+                $arrImportes = collect(CfeXmlCI::importesMap($xml))
+                    ->mapWithKeys(fn ($item, $i) => ["importe{$i}" => $item])
+                    ->toArray();
+
+                $aConceptos = CfeXmlCI::conceptos($xml);
+                $aImportes = CfeXmlCI::importes($xml);
+
+                $total_recibo = 0;
+                foreach ($aConceptos as $key => $concepto) {
+                    if (substr($concepto,0,4) === 'Ener') {
+                        $energia = $aImportes[$key];
+                    }
+                    if (substr($concepto,0,4) === 'Subt') {
+                        $subtotal = $aImportes[$key];
+                    }
+                    if (substr($concepto,0,5) === 'Factu') {
+                        $total_recibo = $aImportes[$key];
+                    }
+                }
+
+
                 // Payload
                 $payloadFull = [
                     'rpu'       => $rpu,
                     'periodo'   => $periodo->periodo,
+                    'periodo_extend' => $periodoStr,
                     'medidor'   => $medidor,
                     'cuenta'    => $cuenta,
                     'tarifa'    => $tarifa,
-                    'periodo'   => $periodoStr,
                     'direccion' => $direccion,
                     'desde'     => $desde,
                     'hasta'     => $hasta,
@@ -458,11 +487,13 @@ class CFEImportService{
                     'factor_carga'    => $factor_carga,
 
                     'energia'              => $energia,
+                    'subtotal'             => $subtotal,
                     'iva'                  => $iva,
                     'dap'                  => $dap,
                     'cargos_y_depositos'   => $cargos_y_depositos,
                     'creditos_y_redondeos' => $creditos_y_redondeos,
                     'total'                => $total,
+                    'total_recibo'         => $total_recibo,
                     'validacion_total'     => $validacion_total,
                     'diferencia'           => $diferencia,
 
@@ -475,6 +506,7 @@ class CFEImportService{
 
                 // Update/Create
                 if ($existente) {
+
                     // si NO forceOverwrite: NO pisamos datos, pero sí aseguramos rutas/ids
                     if (!$forceOverwrite) {
                         $fix = [
@@ -485,6 +517,8 @@ class CFEImportService{
                         if (empty($existente->periodo_id)  && $periodo_id)  $fix['periodo_id']  = $periodo_id;
 
                         $existente->update($fix);
+
+
 
                         $resultados[] = [
                             'status'  => 'updated',
@@ -506,6 +540,11 @@ class CFEImportService{
                     } else {
                         $existente->update($payloadFull);
 
+                        $arrReciboPeriodo = ["recibo_id" => $existente->id, "periodo_id" => $existente->periodo_id,];
+                        $arrConcepto = array_merge($arrConceptos,$arrImportes,$arrReciboPeriodo);
+                        $existente->concepto()->sync($arrConcepto);
+
+
                         $resultados[] = [
                             'status'  => 'updated',
                             'msg'     => 'Actualizado (forceOverwrite)',
@@ -523,7 +562,12 @@ class CFEImportService{
                     }
                 } else {
                     // Si archivo ya existía, no se escribió; igual creamos registro apuntando a él
-                    Recibo::create($payloadFull);
+                    $existente = Recibo::create($payloadFull);
+
+                    $arrReciboPeriodo = ["recibo_id" => $existente->id, "periodo_id" => $existente->periodo_id,];
+                    $arrConcepto = array_merge($arrConceptos,$arrImportes,$arrReciboPeriodo);
+
+                    $existente->concepto()->create($arrConcepto);
 
                     $resultados[] = [
                         'status'  => 'created',
@@ -565,6 +609,49 @@ class CFEImportService{
         }
     }
 
+
+
+
+
+
+    private function normalizeXmlToUtf8(string $xml): string{
+
+        // Quitar BOM si viene
+        $xml = preg_replace('/^\xEF\xBB\xBF/', '', $xml);
+
+        // Detectar encoding declarado en el XML
+        $declared = null;
+        if (preg_match('/<\?xml[^>]*encoding=["\']([^"\']+)["\']/i', $xml, $m)) {
+            $declared = strtoupper(trim($m[1]));
+        }
+
+        // Si el contenido NO es UTF-8 válido, casi seguro viene en ISO/Windows-1252
+        if (!mb_check_encoding($xml, 'UTF-8')) {
+            $from = $declared ?: 'WINDOWS-1252';
+            // fallback duro por si declared es raro
+            $from = str_replace(['UTF8'], ['UTF-8'], $from);
+
+            $converted = @iconv($from, 'UTF-8//TRANSLIT//IGNORE', $xml);
+
+            if ($converted === false) {
+                // último fallback
+                $converted = mb_convert_encoding($xml, 'UTF-8', 'WINDOWS-1252, ISO-8859-1');
+            }
+
+            $xml = $converted;
+        }
+
+        // Forzar que el header diga UTF-8 para que libxml no “reinterprete”
+        if (preg_match('/<\?xml/i', $xml)) {
+            $xml = preg_replace(
+                '/(<\?xml[^>]*encoding=["\'])([^"\']+)(["\'])/i',
+                '$1UTF-8$3',
+                $xml
+            );
+        }
+
+        return $xml;
+    }
 
 
 }

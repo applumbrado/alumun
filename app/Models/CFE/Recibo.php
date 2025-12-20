@@ -14,17 +14,13 @@ class Recibo extends Model
 
     protected $table = 'recibos';
 
-    /**
-     * Campos asignables masivamente.
-     * (No incluimos id, created_at, updated_at, deleted_at)
-     */
     protected $fillable = [
-        'id',
         'rpu',
         'medidor',
         'cuenta',
         'tarifa',
         'periodo',
+        'periodo_extend',
         'direccion',
         'desde',
         'hasta',
@@ -63,73 +59,61 @@ class Recibo extends Model
         'bloqueado',
     ];
 
-    /**
-     * Casts nativos de Eloquent.
-     */
     protected $casts = [
-        'desde'    => 'date:Y-m-d',
-        'hasta'    => 'date:Y-m-d',
+        'desde' => 'date:Y-m-d',
+        'hasta' => 'date:Y-m-d',
 
-        'consumo'             => 'decimal:2',
-        'demanda'             => 'decimal:2',
-        'reactivos'           => 'decimal:2',
-        'factor_potencia'     => 'decimal:2',
-        'factor_carga'        => 'decimal:2',
+        'consumo'          => 'decimal:2',
+        'demanda'          => 'decimal:2',
+        'reactivos'        => 'decimal:2',
+        'factor_potencia'  => 'decimal:2',
+        'factor_carga'     => 'decimal:2',
 
-        'energia'             => 'decimal:2',
-        'subtotal'            => 'decimal:2',
-        'iva'                 => 'decimal:2',
-        'dap'                 => 'decimal:2',
-        'cargos_y_depositos'  => 'decimal:2',
-        'creditos_y_redondeos'=> 'decimal:2',
-        'total'               => 'decimal:2',
-        'validacion_total'    => 'decimal:2',
-        'total_recibo'        => 'decimal:2',
-        'diferencia'          => 'decimal:2',
+        'energia'              => 'decimal:2',
+        'subtotal'             => 'decimal:2',
+        'iva'                  => 'decimal:2',
+        'dap'                  => 'decimal:2',
+        'cargos_y_depositos'   => 'decimal:2',
+        'creditos_y_redondeos' => 'decimal:2',
+        'total'                => 'decimal:2',
+        'validacion_total'     => 'decimal:2',
+        'total_recibo'         => 'decimal:2',
+        'diferencia'           => 'decimal:2',
 
-        'periodo_id'          => 'integer',
-        'servicio_id'         => 'integer',
+        'periodo_id'  => 'integer',
+        'servicio_id' => 'integer',
 
-        'rpu_ok'              => 'boolean',
-        'periodo_ok'          => 'boolean',
-        'total_ok'            => 'boolean',
-        'consumo_ok'          => 'boolean',
-        'desde_ok'            => 'boolean',
-        'hasta_ok'            => 'boolean',
+        'rpu_ok'      => 'boolean',
+        'periodo_ok'  => 'boolean',
+        'total_ok'    => 'boolean',
+        'consumo_ok'  => 'boolean',
+        'desde_ok'    => 'boolean',
+        'hasta_ok'    => 'boolean',
 
-        'activo'              => 'boolean',
-        'bloqueado'           => 'boolean',
+        'activo'      => 'boolean',
+        'bloqueado'   => 'boolean',
 
-        'deleted_at'          => 'datetime',
+        'deleted_at'  => 'datetime',
     ];
 
-    /**
-     * Atributos calculados que se deben incluir en toArray() / toJson().
-     */
     protected $appends = [
         'xml_url',
         'pdf_url',
+        // 'expediente_id', // opcional
     ];
-
-    /* =========================================================================
-     *  BOOT / EVENTOS
-     * ========================================================================= */
 
     protected static function booted()
     {
         static::saving(function (Recibo $recibo) {
-            // validacion_total = energia + iva + dap + cargos_y_depositos + creditos_y_redondeos
             $recibo->validacion_total =
                 (float) $recibo->energia +
-                (float) $recibo->iva+
-            (float) $recibo->dap +
-            (float) $recibo->cargos_y_depositos;
+                (float) $recibo->iva +
+                (float) $recibo->dap +
+                (float) $recibo->cargos_y_depositos +
+                (float) $recibo->creditos_y_redondeos;
 
-//            (float) $recibo->creditos_y_redondeos;
-
-
-            // diferencia = validacion_total - total
-            $recibo->diferencia = (float) $recibo->validacion_total - (float) $recibo->total;
+            // diferencia = total - validacion_total
+            $recibo->diferencia = (float) $recibo->total - (float) $recibo->validacion_total;
         });
     }
 
@@ -137,56 +121,68 @@ class Recibo extends Model
      *  RELACIONES
      * ========================================================================= */
 
-    /**
-     * Periodo al que pertenece este recibo.
-     */
     public function periodo()
     {
         return $this->belongsTo(Periodo::class);
     }
 
-    /**
-     * Servicio (RPU) al que pertenece este recibo.
-     */
     public function servicio()
     {
         return $this->belongsTo(Servicio::class);
     }
 
-    /* =========================================================================
-     *  ACCESSORS PARA LEER PDF/XML DESDE EL WEB
-     * ========================================================================= */
+    /**
+     * 1-1: Conceptos asociados al recibo (tabla conceptos tiene recibo_id).
+     */
+    public function concepto()
+    {
+        return $this->hasOne(Concepto::class, 'recibo_id', 'id');
+    }
 
+    /**
+     * 1-1: Expediente asociado al recibo (tabla expedientes tiene recibo_id).
+     */
+    public function expediente()
+    {
+        return $this->hasOne(\App\Models\CFE\Expediente::class, 'recibo_id', 'id');
+    }
+
+    /* =========================================================================
+     *  ACCESSORS PARA PDF/XML
+     * ========================================================================= */
 
     public function getXmlUrlAttribute(): ?string
     {
-        return $this->xml_file
-            ? Storage::disk('cfe')->url($this->xml_file)
-            : null;
+        return $this->xml_file ? Storage::disk('cfe')->url($this->xml_file) : null;
     }
 
     public function getPdfUrlAttribute(): ?string
     {
-        return $this->pdf_file
-            ? Storage::disk('cfe')->url($this->pdf_file)
-            : null;
+        return $this->pdf_file ? Storage::disk('cfe')->url($this->pdf_file) : null;
+    }
+
+    /**
+     * (Opcional) para usarlo rápido en front sin cargar toda la relación:
+     */
+    public function getExpedienteIdAttribute(): ?int
+    {
+        if ($this->relationLoaded('expediente')) {
+            return $this->expediente?->id;
+        }
+
+        // si no está eager loaded, evita query extra:
+        return null;
     }
 
     /* =========================================================================
      *  SCOPES
      * ========================================================================= */
 
-    /**
-     * Filtrar por RPU.
-     */
     public function scopeDeRpu($query, string $rpu)
     {
         return $query->where('rpu', $rpu);
     }
 
-    /**
-     * Filtrar por un periodo específico (objeto o id).
-     */
     public function scopeDelPeriodo($query, $periodo)
     {
         if ($periodo instanceof Periodo) {
@@ -200,23 +196,15 @@ class Recibo extends Model
         return $query;
     }
 
-    /**
-     * Filtrar por el periodo vigente (predeterminado).
-     */
     public function scopeDelPeriodoVigente($query)
     {
         $p = Periodo::vigente();
-
         if ($p) {
             $query->where('periodo_id', $p->id);
         }
-
         return $query;
     }
 
-    /**
-     * Filtrar por servicio.
-     */
     public function scopeDelServicio($query, $servicio)
     {
         if ($servicio instanceof Servicio) {
@@ -228,5 +216,13 @@ class Recibo extends Model
         }
 
         return $query;
+    }
+
+    /**
+     * Filtrar recibos que ya tienen expediente.
+     */
+    public function scopeConExpediente($query)
+    {
+        return $query->whereHas('expediente');
     }
 }
