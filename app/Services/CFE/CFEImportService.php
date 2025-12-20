@@ -190,9 +190,11 @@ class CFEImportService{
                 }
 
                 // Básicos
-                $cuenta  = (string)($cls->NumCta ?? '');
+                $cuenta  = (string)($cls->Conceptos->NumCta ?? '');
                 $medidor = (string)($cls->NUMMED1 ?? '');
                 $tarifa  = (string)($cls->TARIFA ?? '');
+
+                dd($cuenta);
 
                 // PeriodoStr
                 $desdeRaw   = (string)($cls->FECDESDE ?? '');
