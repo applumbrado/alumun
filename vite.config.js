@@ -26,6 +26,14 @@ export default defineConfig({
         watch: {
             usePolling: true,
         },
+        proxy: {
+            // TODO lo que sea backend lo mandas al 8000
+            '^/(login|logout|register|forgot-password|reset-password|sanctum|api|storage|broadcasting)': {
+                target: 'http://localhost:8000',
+                changeOrigin: true,
+                secure: false,
+            },
+        },
     },
     optimizeDeps: {
         include: ['jquery'],

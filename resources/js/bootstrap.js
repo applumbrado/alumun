@@ -4,17 +4,36 @@ window._ = _
 
 import axios from 'axios'
 window.axios = axios
+window.axios.defaults.withCredentials = true
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+axios.defaults.withCredentials = true
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
 // Si usas meta csrf-token en el <head>
-const token = document.head.querySelector('meta[name="csrf-token"]')
+// const token = document.head.querySelector('meta[name="csrf-token"]')
+// if (token) {
+//     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content
+// }
+
+const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
 if (token) {
-    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = token
 }
+axios.interceptors.response.use(
+    r => r,
+    err => {
+        if (err?.response?.status === 419 || err?.response?.status === 404) {
+            window.location.href = route('login') // o '/login'
+            return
+        }
+        return Promise.reject(err)
+    }
+)
 
 // 🔌 Echo + Socket.io (v2.4.0)
 import Echo from 'laravel-echo'
 import io from 'socket.io-client'
+import {route} from "ziggy-js";
 
 window.io = io
 

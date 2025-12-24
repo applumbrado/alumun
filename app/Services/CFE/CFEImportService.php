@@ -194,8 +194,6 @@ class CFEImportService{
                 $medidor = (string)($cls->NUMMED1 ?? '');
                 $tarifa  = (string)($cls->TARIFA ?? '');
 
-//                dd($cuenta);
-
                 // PeriodoStr
                 $desdeRaw   = (string)($cls->FECDESDE ?? '');
                 $hastaRaw   = (string)($cls->FECHASTA ?? '');

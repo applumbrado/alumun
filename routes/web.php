@@ -6,6 +6,10 @@ use App\Http\Controllers\Catalogos\PeriodosController;
 use App\Http\Controllers\Catalogos\ServicioController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\CFE\CFEImportController;
+use App\Http\Controllers\User\BulkPermissionsController;
+use App\Http\Controllers\User\BulkUserRolesController;
+use App\Http\Controllers\User\Reporting\UserReportingController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -51,7 +55,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/periodos/{periodo}/predeterminar', [PeriodosController::class, 'setPredeterminado'])
         ->name('periodos.predeterminar');
 
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::post('users.store', [UserController::class, 'store'])->name('users.store');
+    Route::put('users.update/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('users.delete/{user}', [UserController::class, 'destroy'])->name('users.delete');
+    Route::get('users/download/data', [UserReportingController::class,'downloadUsersData'])->name('users.download');
 
+    Route::get('/bulk-roles', [BulkUserRolesController::class, 'edit'])->name('bulk.roles.edit');
+    Route::post('/bulk-roles/assign-partial', [BulkUserRolesController::class, 'assignPartial'])->name('bulk.roles.assignPartial');
+    Route::post('/bulk-roles/remove-partial', [BulkUserRolesController::class, 'removePartial'])->name('bulk.roles.removePartial');
+
+    Route::get('/bulk-permisos', [BulkPermissionsController::class, 'edit'])->name('bulk.permisos.edit');
+    Route::post('/bulk-permisos/assign-partial', [BulkPermissionsController::class, 'assignPartial'])->name('bulk.permisos.assignPartial');
+    Route::post('/bulk-permisos/remove-partial', [BulkPermissionsController::class, 'removePartial'])->name('bulk.permisos.removePartial');
 
 
 

@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             CreateGruposSeeder::class,
             ImportUsersExternalSeeder::class,
             ImportServiciosSeeders::class,
-            ImportPeriodos20252026::class
+            ImportPeriodos20252026::class,
+            RolesYPermisosDosSeeder::class
         ]);
 
     }
