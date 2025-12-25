@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Validation\ValidationException;
 
 class ArchivosPlanosController extends Controller
 {
@@ -49,13 +50,38 @@ class ArchivosPlanosController extends Controller
         ]);
     }
 
-    public function upload(Request $request)
-    {
+    public function upload(Request $request){
+
+        foreach ($request->file('archivos', []) as $f) {
+            logger()->info('UPLOAD', [
+                'name' => $f->getClientOriginalName(),
+                'ext'  => $f->getClientOriginalExtension(),
+                'mime' => $f->getMimeType(),
+            ]);
+        }
+
         $request->validate([
-            'archivos'   => ['required','array','min:1','max:3'],
-            'archivos.*' => ['required','file','mimes:xlsx','max:51200'],
-            'auto_consecutivo' => ['nullable','boolean'],
+            'archivos'   => ['required', 'array', 'min:1', 'max:3'],
+            'archivos.*' => [
+                'required',
+                'file',
+                'max:51200', // 50MB (ajusta)
+                // ✅ MIMEs comunes para xlsx (muchas veces llega como zip/octet-stream)
+                'mimetypes:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip,application/octet-stream',
+            ],
+        ], [
+            'archivos.*.mimetypes' => 'El archivo debe ser .xlsx (Excel).',
         ]);
+
+// ✅ Segunda capa: asegurar extensión .xlsx sí o sí
+        foreach ($request->file('archivos', []) as $i => $file) {
+            $ext = strtolower($file->getClientOriginalExtension());
+            if ($ext !== 'xlsx') {
+                throw ValidationException::withMessages([
+                    "archivos.$i" => "El archivo debe tener extensión .xlsx (recibí .$ext).",
+                ]);
+            }
+        }
 
         $periodo = periodo_vigente();
         if (! $periodo) {
