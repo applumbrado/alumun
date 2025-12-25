@@ -20,9 +20,7 @@ const tabs = [
 ]
 
 const roles = [
-  { id: 12, label: 'ALUMNO' },
-  { id: 1, label: 'PADRE' },
-  { id: 2, label: 'MADRE' },
+  { id: 3, label: 'Invitado' },
 ]
 
 const activeTab = ref(1)
@@ -83,7 +81,7 @@ const initialFormData = computed(() => {
       nacionalidad: ' ',
     },
 
-    role_id: 12,
+    role_id: 3,
   }
 
   if (props.mode === 'edit') {

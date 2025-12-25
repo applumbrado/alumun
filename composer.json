@@ -7,17 +7,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-simplexml": "*",
+        "ext-zip": "*",
         "ahmedsaoud31/laravel-permission-to-vuejs": "dev-master",
         "inertiajs/inertia-laravel": "^2.0.10",
         "intervention/image": "^3.11.4",
         "laravel/framework": "^12.38.0",
         "laravel/sanctum": "^4.2.0",
         "laravel/tinker": "^2.10.1",
-        "phpoffice/phpspreadsheet": "^5.2",
+        "phpoffice/phpspreadsheet": "^5.3",
         "spatie/laravel-permission": "^6.23",
-        "tightenco/ziggy": "^2.6.0",
-        "ext-zip": "*",
-        "ext-simplexml": "*"
+        "tightenco/ziggy": "^2.6.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest"

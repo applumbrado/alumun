@@ -47,6 +47,7 @@ const refreshData = () => {
 const handleClose = () => {
     selectedUser.value = null
     showCreateModal.value = false
+    showCreateModal.value = false
 }
 
 const handleModalSuccess = () => {
@@ -135,44 +136,6 @@ const destroy = async (userId) => {
                         <span>Crear usuario</span>
                     </button>
 
-                    <DownloadButton
-                        v-show="props.tipo_usuario === 0"
-                        url="/users/download/data"
-                        button-text="Descargar"
-                        variant="outline"
-                        size="md"
-                        class="!mt-0"
-                    />
-
-                    <DownloadButton
-                        v-show="props.tipo_usuario === 1"
-                        url="/reportes/lista-alumnos"
-                        button-text="Listado"
-                        variant="outline"
-                        size="md"
-                        class="!mt-0"
-                        icon-report="fas fa-users"
-                    />
-
-                    <DownloadButton
-                        v-show="props.tipo_usuario === 1 && can('modificar becas | all ')"
-                        url="/reportes/becas-por-grupo-fpdf"
-                        button-text="Becas"
-                        variant="outline"
-                        size="md"
-                        class="!mt-0"
-                        icon-report="fas fa-file-pdf"
-                    />
-
-                    <DownloadButton
-                        v-show="props.tipo_usuario === 1 && can('modificar becas | all ')"
-                        url="/reportes/becas-por-grupo/excel"
-                        button-text="Becas"
-                        variant="outline"
-                        size="md"
-                        class="!mt-0"
-                        icon-report="fas fa-file-excel"
-                    />
                 </div>
             </div>
 

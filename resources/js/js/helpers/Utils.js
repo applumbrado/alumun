@@ -78,4 +78,31 @@ export const Utils = {
 
 
 
+    /**
+     * Separa miles: 1058 -> "1,058"
+     * @param {number|string} value
+     * @param {Object} opts
+     * @param {number} opts.decimals - decimales a mostrar (default 0)
+     * @param {boolean} opts.allowNull - si true, null/undefined regresa ""
+     * @returns {string}
+     */
+    formatThousands(value, opts = {}) {
+        const { decimals = 0, allowNull = true } = opts
+
+        if (value === null || value === undefined || value === '') {
+            return allowNull ? '' : '0'
+        }
+
+        const num = typeof value === 'number'
+            ? value
+            : Number(String(value).replace(/,/g, '').trim())
+
+        if (!Number.isFinite(num)) return allowNull ? '' : '0'
+
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals,
+        }).format(num)
+    },
+
 }

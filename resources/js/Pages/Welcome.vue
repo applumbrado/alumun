@@ -13,7 +13,7 @@ import { Link, Head } from '@inertiajs/vue3';
                     <span class="block text-slate-50">Gestión de Alumbrado Público Municipal</span>
                 </h1>
                 <p class="text-sm md:text-base text-slate-300">
-                    Monitorea reportes, zonas críticas y el estado de la iluminación en tiempo real desde una interfaz moderna.
+                    Anáálisis de reportes, recibos de pago y el estado de la iluminación en tiempo real desde una interfaz moderna.
                 </p>
                 <div class="flex flex-wrap gap-3 pt-2">
                     <Link href="/login" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-alumun-guinda text-sm font-semibold shadow-lg shadow-alumun-guinda/40 hover:bg-alumun-guinda/90 transition">
@@ -36,13 +36,13 @@ import { Link, Head } from '@inertiajs/vue3';
                     </div>
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div class="rounded-2xl bg-gradient-to-br from-alumun-guinda/80 to-black/80 p-3">
-                            <p class="text-slate-200">Luminarias encendidas</p>
-                            <p class="mt-1 text-lg font-bold text-white">1,304</p>
+                            <p class="text-slate-200">Servicios activos</p>
+                            <p class="mt-1 text-lg font-bold text-white">1000+</p>
                             <p class="mt-1 text-[10px] text-emerald-200">+23 en 24h</p>
                         </div>
                         <div class="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-3">
-                            <p class="text-slate-200">Reportes abiertos</p>
-                            <p class="mt-1 text-lg font-bold text-alumun-mostaza">87</p>
+                            <p class="text-slate-200">Grupos abiertos</p>
+                            <p class="mt-1 text-lg font-bold text-alumun-mostaza">3</p>
                             <p class="mt-1 text-[10px] text-slate-300">Prioritarios</p>
                         </div>
                     </div>

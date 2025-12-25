@@ -55,8 +55,12 @@ class Recibo extends Model
         'desde_ok',
         'hasta_ok',
 
+        'validado',
+
         'activo',
         'bloqueado',
+
+        'conciliado_at'
     ];
 
     protected $casts = [
@@ -90,10 +94,13 @@ class Recibo extends Model
         'desde_ok'    => 'boolean',
         'hasta_ok'    => 'boolean',
 
+        'validado'    => 'boolean',
+
         'activo'      => 'boolean',
         'bloqueado'   => 'boolean',
 
         'deleted_at'  => 'datetime',
+        'conciliado_at' => 'datetime',
     ];
 
     protected $appends = [

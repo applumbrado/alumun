@@ -90,6 +90,7 @@ return [
             'periodos'               => 'periodos',
             'recibos'                => 'recibos',
             'expedientes'            => 'expedientes',
+            'archivosplanos'         => 'archivosplanos',
         ],
 
     ],

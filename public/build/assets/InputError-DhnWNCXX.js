@@ -1,0 +1,1 @@
+import{B as s,a0 as t,l as a,m as r,v as o,y as c}from"./vendor-BbI-TUMk.js";const n={class:"text-sm text-red-600"},p={__name:"InputError",props:{message:{type:String}},setup(e){return(i,m)=>s((r(),a("div",null,[o("p",n,c(e.message),1)],512)),[[t,e.message]])}};export{p as _};

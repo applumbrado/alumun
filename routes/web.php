@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Catalogos\GrupoController;
 use App\Http\Controllers\Catalogos\PeriodosController;
 use App\Http\Controllers\Catalogos\ServicioController;
+use App\Http\Controllers\CFE\ArchivosPlanosController;
+use App\Http\Controllers\CFE\CFEConciliacionesController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\CFE\CFEImportController;
 use App\Http\Controllers\User\BulkPermissionsController;
@@ -41,9 +43,32 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('cfe')->group(function () {
 
+
+        // IMPORTAR RECIBOS
         Route::get('/importar/index', [CFEImportController::class, 'index'])->name('cfe.importar.index');
         Route::post('/importar', [CFEImportController::class, 'importar'])->name('cfe.importar');
 
+
+        // ARCHIVOS PLANOS
+        Route::get('/archivos-planos', [\App\Http\Controllers\CFE\ArchivosPlanosController::class, 'index'])
+            ->name('cfe.archivos-planos.index');
+
+        Route::post('/archivos-planos', [\App\Http\Controllers\CFE\ArchivosPlanosController::class, 'upload'])
+            ->name('cfe.archivos-planos.upload');
+
+        Route::delete('/archivos-planos/{archivoPlano}', [\App\Http\Controllers\CFE\ArchivosPlanosController::class, 'destroy'])
+            ->name('cfe.archivos-planos.destroy');
+
+
+        // CONCIALIACIONES
+        Route::get('/conciliaciones', [\App\Http\Controllers\CFE\CFEConciliacionesController::class, 'index'])
+            ->name('cfe.conciliaciones.index');
+
+        Route::post('/conciliaciones/run', [\App\Http\Controllers\CFE\CFEConciliacionesController::class, 'run'])
+            ->name('cfe.conciliaciones.run');
+
+        Route::get('/conciliaciones/items', [\App\Http\Controllers\CFE\CFEConciliacionesController::class, 'items'])
+            ->name('cfe.conciliaciones.items');
 
     });
 

@@ -1,5 +1,8 @@
 <template>
     <div class="min-h-screen flex bg-slate-950 text-slate-100">
+
+        <button class="md:hidden" @click="sidebarOpen = true">☰</button>
+
         <!-- Sidebar (desktop + móvil) -->
         <Sidebar
             :is-collapsed="isCollapsed"

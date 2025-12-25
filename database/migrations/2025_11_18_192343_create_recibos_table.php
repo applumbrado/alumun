@@ -65,8 +65,11 @@ return new class extends Migration {
             $table->boolean('consumo_ok')->default(false)->index();
             $table->boolean('desde_ok')->default(false)->index();
             $table->boolean('hasta_ok')->default(false)->index();
+            $table->boolean('validado')->default(false)->index();
             $table->boolean('activo')->default(true)->index();
             $table->boolean('bloqueado')->default(false)->index();
+            $table->timestamp('conciliado_at')->nullable()->index();
+
             $table->softDeletes();
             $table->timestamps();
             $table->unique(['rpu','periodo','periodo_id']);

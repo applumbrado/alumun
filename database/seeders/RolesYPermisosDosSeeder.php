@@ -19,6 +19,7 @@ class RolesYPermisosDosSeeder extends Seeder
         Permission::create(['name' => 'crear periodo','descripcion'=>'Permite crear periodos', 'color' => 'ffab91']);
         Permission::create(['name' => 'crear servicio','descripcion'=>'Permite crear servicios', 'color' => 'ffab91']);
         Permission::create(['name' => 'procesar recibos','descripcion'=>'Puede procesar recibos', 'color' => 'ffab91']);
+        Permission::create(['name' => 'subir archivos planos','descripcion'=>'Permite subir archivos planos', 'color' => 'ffab91']);
         Permission::create(['name' => 'conciliar recibos','descripcion'=>'Permite conciliar recibos', 'color' => 'ffab91']);
         Permission::create(['name' => 'consulta reportes','descripcion'=>'Permite consultar reportes', 'color' => 'ffab91']);
 
