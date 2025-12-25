@@ -95,6 +95,7 @@ const meta = ref({ current_page: 1, last_page: 1, per_page: 25, total: 0, from: 
 
 const itemsQuery = ref('')
 const validatedFilter = ref('all') // all | 1 | 0
+const statusFilter = ref('all')    // all | validated | mismatch | no_xlsx | dup_db
 const perPage = ref(25)
 
 let _t = null
@@ -114,8 +115,12 @@ const fetchItems = async ({ page } = {}) => {
             per_page: perPage.value,
         }
 
+        // ✅ Mantengo tu filtro “validados/no”
         if (validatedFilter.value === '1') params.validated = '1'
         else if (validatedFilter.value === '0') params.validated = '0'
+
+        // ✅ Nuevo: filtro por estatus (si tu backend lo soporta, perfecto; si no, igual no truena)
+        if (statusFilter.value !== 'all') params.status = statusFilter.value
 
         const { data } = await axios.get(props.itemsUrl, { params })
         if (!data?.ok) throw new Error(data?.message || 'No se pudo cargar el listado')
@@ -134,7 +139,7 @@ const goPage = (p) => {
     fetchItems({ page: next })
 }
 
-watch([itemsQuery, validatedFilter, perPage], () => {
+watch([itemsQuery, validatedFilter, statusFilter, perPage], () => {
     debounce(() => fetchItems({ page: 1 }), 350)
 })
 
@@ -152,6 +157,21 @@ const validatedPill = (v) =>
     v
         ? 'bg-emerald-500/15 text-emerald-200 border-emerald-400/30'
         : 'bg-rose-500/15 text-rose-200 border-rose-400/30'
+
+// ✅ Estatus pro (badge)
+const statusFromItem = (it) => {
+    const obs = String(it?.observaciones ?? '')
+    if (obs.startsWith('RPU duplicado en BD')) return { key: 'dup_db', label: 'DUP BD', cls: 'bg-sky-500/15 text-sky-200 border-sky-400/30' }
+    if (it?.validado) return { key: 'validated', label: 'VALIDADO', cls: 'bg-emerald-500/15 text-emerald-200 border-emerald-400/30' }
+    if (!it?.conciliado_at) return { key: 'no_xlsx', label: 'NO XLSX', cls: 'bg-amber-500/15 text-amber-200 border-amber-400/30' }
+    return { key: 'mismatch', label: 'MISMATCH', cls: 'bg-rose-500/15 text-rose-200 border-rose-400/30' }
+}
+
+const truncate = (s, n = 70) => {
+    s = String(s ?? '')
+    if (s.length <= n) return s
+    return s.slice(0, n) + '…'
+}
 </script>
 
 <template>
@@ -167,12 +187,12 @@ const validatedPill = (v) =>
                         Todo movimiento se realiza en el <span class="text-emerald-200 font-semibold">Periodo Vigente</span>.
                     </p>
                     <div class="mt-2 text-xs text-white/70">
-            <span class="inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-white/5 border border-white/10">
-              📅 <span class="font-semibold text-white">{{ labelPeriodoVigente }}</span>
-            </span>
+                        <span class="inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-white/5 border border-white/10">
+                          📅 <span class="font-semibold text-white">{{ labelPeriodoVigente }}</span>
+                        </span>
                         <span class="ml-2 inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-white/5 border border-white/10">
-              📁 <code class="text-white/80">{{ folder }}</code>
-            </span>
+                          📁 <code class="text-white/80">{{ folder }}</code>
+                        </span>
                     </div>
                 </div>
 
@@ -215,8 +235,8 @@ const validatedPill = (v) =>
                         <p class="text-xs text-white/60">Se recorren todos, uno por uno.</p>
                     </div>
                     <span class="text-xs px-2 py-1 rounded-full border bg-white/5 border-white/10 text-white/80">
-            {{ files?.length ?? 0 }} XLSX
-          </span>
+                        {{ files?.length ?? 0 }} XLSX
+                    </span>
                 </div>
 
                 <div v-if="!hasFiles" class="text-sm text-amber-200 mt-3">
@@ -234,12 +254,14 @@ const validatedPill = (v) =>
                 </div>
             </div>
 
-            <!-- ✅ LISTADO DE RECIBOS (periodo vigente) -->
+            <!-- ✅ LISTADO DE RECIBOS -->
             <div class="rounded-xl border border-white/10 bg-black/20 overflow-hidden mb-6">
                 <div class="p-4 border-b border-white/10 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                     <div>
                         <h3 class="text-sm font-semibold text-white">Recibos del periodo vigente</h3>
-                        <p class="text-xs text-white/60">Validados / No validados (sin incluir filas fuera de periodo).</p>
+                        <p class="text-xs text-white/60">
+                            Estatus + checks + observaciones (sin mostrar filas fuera de periodo).
+                        </p>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -249,6 +271,18 @@ const validatedPill = (v) =>
                             placeholder="Buscar por RPU o periodo..."
                             class="w-full sm:w-64 rounded-xl bg-black/20 border border-white/10 text-white placeholder:text-white/40 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                         />
+
+                        <select
+                            v-model="statusFilter"
+                            class="rounded-xl bg-black/20 border border-white/10 text-white px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                            title="Filtrar por estatus"
+                        >
+                            <option value="all">Estatus: Todos</option>
+                            <option value="validated">Validados</option>
+                            <option value="mismatch">Mismatch</option>
+                            <option value="no_xlsx">No XLSX</option>
+                            <option value="dup_db">Duplicado BD</option>
+                        </select>
 
                         <div class="flex items-center gap-2">
                             <button
@@ -329,6 +363,7 @@ const validatedPill = (v) =>
                             <tr class="text-white/70 border-b border-white/10">
                                 <th class="py-2 pr-3">ID</th>
                                 <th class="py-2 pr-3">RPU</th>
+                                <th class="py-2 pr-3">Estatus</th>
                                 <th class="py-2 pr-3">Periodo</th>
                                 <th class="py-2 pr-3">Total</th>
                                 <th class="py-2 pr-3">Consumo</th>
@@ -336,7 +371,7 @@ const validatedPill = (v) =>
                                 <th class="py-2 pr-3">Hasta</th>
                                 <th class="py-2 pr-3">Validado</th>
                                 <th class="py-2 pr-3">Checks</th>
-                                <th class="py-2 pr-3">Conciliado</th>
+                                <th class="py-2 pr-3">Observaciones</th>
                             </tr>
                             </thead>
 
@@ -349,6 +384,23 @@ const validatedPill = (v) =>
                             >
                                 <td class="py-2 pr-3">{{ it.id }}</td>
                                 <td class="py-2 pr-3 font-semibold">{{ it.rpu }}</td>
+
+                                <td class="py-2 pr-3">
+                                    <span
+                                        class="px-2 py-1 rounded-full border text-[10px] inline-flex items-center gap-2"
+                                        :class="statusFromItem(it).cls"
+                                        :title="it.observaciones ?? ''"
+                                    >
+                                        <span class="inline-block h-1.5 w-1.5 rounded-full"
+                                              :class="statusFromItem(it).key==='validated'
+                                                ? 'bg-emerald-300'
+                                                : (statusFromItem(it).key==='no_xlsx'
+                                                    ? 'bg-amber-300'
+                                                    : (statusFromItem(it).key==='dup_db' ? 'bg-sky-300' : 'bg-rose-300'))" />
+                                        {{ statusFromItem(it).label }}
+                                    </span>
+                                </td>
+
                                 <td class="py-2 pr-3">{{ it.periodo }}</td>
                                 <td class="py-2 pr-3">{{ it.total }}</td>
                                 <td class="py-2 pr-3">{{ it.consumo }}</td>
@@ -356,9 +408,9 @@ const validatedPill = (v) =>
                                 <td class="py-2 pr-3">{{ it.hasta }}</td>
 
                                 <td class="py-2 pr-3">
-                    <span class="px-2 py-1 rounded-full border text-[10px]" :class="validatedPill(it.validado)">
-                      {{ it.validado ? 'VALIDADO' : 'NO' }}
-                    </span>
+                                    <span class="px-2 py-1 rounded-full border text-[10px]" :class="validatedPill(it.validado)">
+                                      {{ it.validado ? 'VALIDADO' : 'NO' }}
+                                    </span>
                                 </td>
 
                                 <td class="py-2 pr-3">
@@ -372,8 +424,11 @@ const validatedPill = (v) =>
                                     </div>
                                 </td>
 
-                                <td class="py-2 pr-3 text-white/70">
-                                    {{ it.conciliado_at ?? '—' }}
+                                <td class="py-2 pr-3 text-white/70 max-w-[420px]">
+                                    <span v-if="it.observaciones" class="block truncate" :title="it.observaciones">
+                                        {{ truncate(it.observaciones, 80) }}
+                                    </span>
+                                    <span v-else class="text-white/30">—</span>
                                 </td>
                             </tr>
                             </tbody>
@@ -395,7 +450,7 @@ const validatedPill = (v) =>
 
             <!-- Resultados (cuando corres conciliación) -->
             <div v-if="result" class="space-y-4">
-                <div class="rounded-xl border border-white/10 bg-black/20 p-4">
+                <div v-if="result?.global" class="rounded-xl border border-white/10 bg-black/20 p-4">
                     <h3 class="text-sm font-semibold text-white">Resumen global</h3>
                     <div class="mt-3 grid grid-cols-2 md:grid-cols-6 gap-3 text-xs">
                         <div class="rounded-lg border border-white/10 bg-white/5 p-3">
@@ -437,8 +492,8 @@ const validatedPill = (v) =>
                             </div>
                         </div>
                         <span class="text-[10px] px-2 py-1 rounded-full border bg-white/5 border-white/10 text-white/80">
-              {{ file.details?.length ?? 0 }} incidencias
-            </span>
+                            {{ file.details?.length ?? 0 }} incidencias
+                        </span>
                     </div>
 
                     <div v-if="(file.details?.length ?? 0) === 0" class="p-4 text-sm text-emerald-200">
@@ -468,9 +523,9 @@ const validatedPill = (v) =>
                             >
                                 <td class="py-2 pr-2">{{ d.row }}</td>
                                 <td class="py-2 pr-2">
-                    <span class="px-2 py-1 rounded text-[10px]" :class="statusPill(d.status)">
-                      {{ d.status }}
-                    </span>
+                                    <span class="px-2 py-1 rounded text-[10px]" :class="statusPill(d.status)">
+                                      {{ d.status }}
+                                    </span>
                                 </td>
                                 <td class="py-2 pr-2 font-semibold">{{ d.rpu }}</td>
                                 <td class="py-2 pr-2">{{ d.periodo_xlsx ?? d.xlsx?.periodo }}</td>

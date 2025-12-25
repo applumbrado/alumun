@@ -43,7 +43,7 @@ class CFEConciliacionService
             ->where('periodo_id', $periodo->id)
             ->get();
 
-        // Reset flags
+        // Reset flags + limpiar observaciones al inicio de una conciliación
         Recibo::query()
             ->where('periodo_id', $periodo->id)
             ->update([
@@ -55,6 +55,7 @@ class CFEConciliacionService
                 'hasta_ok' => false,
                 'validado' => false,
                 'conciliado_at' => null,
+                'observaciones' => null, // ✅ nuevo
             ]);
 
         $byRpu = $recibos->groupBy(fn ($r) => (string) $r->rpu);
@@ -65,17 +66,26 @@ class CFEConciliacionService
             'files_count' => count($files),
             'rows_read' => 0,
             'rows_matched' => 0,
-            'rows_not_found' => 0,
+            'rows_not_found' => 0,     // encontrados en xlsx pero no en DB
             'rows_validated' => 0,
             'rows_mismatch' => 0,
             'rows_duplicates' => 0,
             'db_items' => $recibos->count(),
             'db_duplicates_rpu' => $byRpu->filter(fn ($g) => $g->count() > 1)->map->count()->all(),
+
+            // ✅ extras para diagnóstico
+            'xlsx_found_not_in_db_count' => 0,
+            'xlsx_found_not_in_db_sample' => [],  // se limita para no explotar payload
+            'db_not_found_in_xlsx_count' => 0,
+            'db_duplicates_unmatched_count' => 0,
         ];
 
         $perFile = [];
         $seenHashes = [];      // hash => ['file'=>..., 'row'=>...]
         $pendingUpserts = [];  // acumulador global de upserts
+
+        // ✅ para saber qué RPUs sí aparecieron en al menos un archivo
+        $rpusInXlsx = []; // rpu => true
 
         foreach ($files as $relativePath) {
             $absPath = Storage::disk('public')->path($relativePath);
@@ -85,7 +95,7 @@ class CFEConciliacionService
                 'path' => $relativePath,
                 'rows_read' => 0,
                 'matched' => 0,
-                'not_found' => 0,
+                'not_found' => 0,  // xlsx -> no existe en DB
                 'validated' => 0,
                 'mismatch' => 0,
                 'duplicates' => 0,
@@ -103,7 +113,7 @@ class CFEConciliacionService
                     $rpu      = $this->cellString($sheet, "A{$row}");
                     $periodoX = $this->cellString($sheet, "B{$row}");
 
-                    // ✅ REGLA: Total desde columna I
+                    // ✅ Total desde columna L
                     $totalX   = $this->cellFloatNullableFast($sheet, "L{$row}");
                     $consX    = $this->cellFloatNullableFast($sheet, "CC{$row}");
 
@@ -132,7 +142,7 @@ class CFEConciliacionService
 
                         $fileReport['duplicates']++;
                         $global['rows_duplicates']++;
-                        // ✅ OJO: NO hacemos continue; se valida igual
+                        // ✅ NO continue; se valida igual
                     } else {
                         $seenHashes[$hash] = ['file' => basename($relativePath), 'row' => $row];
                     }
@@ -150,18 +160,32 @@ class CFEConciliacionService
                         continue;
                     }
 
+                    // ✅ marcar que este RPU sí apareció en xlsx
+                    $rpusInXlsx[(string)$rpu] = true;
+
                     $fileReport['rows_read']++;
                     $global['rows_read']++;
 
                     $grupo = $byRpu->get($rpu);
 
+                    // (1) Encontrado en XLSX pero no en DB (periodo vigente)
                     if (!$grupo || $grupo->isEmpty()) {
                         $fileReport['not_found']++;
                         $global['rows_not_found']++;
+                        $global['xlsx_found_not_in_db_count']++;
+
+                        if (count($global['xlsx_found_not_in_db_sample']) < 200) {
+                            $global['xlsx_found_not_in_db_sample'][] = [
+                                'file' => basename($relativePath),
+                                'row' => $row,
+                                'rpu' => $rpu,
+                                'periodo_xlsx' => $periodoX,
+                            ];
+                        }
 
                         $fileReport['details'][] = [
                             'row' => $row,
-                            'status' => $isDuplicateRow ? 'duplicate_row_not_found' : 'not_found',
+                            'status' => $isDuplicateRow ? 'duplicate_row_not_found_in_db' : 'not_found_in_db',
                             'hash' => $hash,
                             'rpu' => $rpu,
                             'periodo_xlsx' => $periodoX,
@@ -169,19 +193,19 @@ class CFEConciliacionService
                             'consumo_xlsx' => (float) ($consX ?? 0),
                             'desde_xlsx' => $desdeX,
                             'hasta_xlsx' => $hastaX,
-                            'msg' => $isDuplicateRow
-                                ? 'Fila duplicada (hash repetido) y además RPU no existe en recibos del periodo.'
-                                : 'No existe en recibos del periodo vigente (se continúa).',
+                            'msg' => 'Se encontró en archivo plano, pero NO existe en Recibos del periodo vigente.',
                             'first_seen' => $dupRef,
                         ];
                         continue;
                     }
 
+                    // si hay más de un recibo con mismo RPU, intentamos elegir el “mejor match”
                     $recibo = $this->pickBestRecibo($grupo->all(), $periodoX, $desdeX, $hastaX) ?? $grupo->first();
 
                     $fileReport['matched']++;
                     $global['rows_matched']++;
 
+                    // Comparaciones
                     $rpuOk   = ((string) $recibo->rpu === (string) $rpu);
                     $perOk   = ($this->norm($recibo->periodo) === $this->norm($periodoX));
                     $totalOk = $this->floatEquals((float) $recibo->total, (float) ($totalX ?? 0), 0.01);
@@ -190,6 +214,13 @@ class CFEConciliacionService
                     $hastaOk = $this->dateEquals($recibo->hasta, $hastaX);
 
                     $validado = $rpuOk && $perOk && $totalOk && $consOk && $desdeOk && $hastaOk;
+
+                    // ✅ observaciones:
+                    // - si valida: limpiar
+                    // - si no valida: indicar qué falló
+                    $observaciones = $validado
+                        ? null
+                        : $this->buildObservacionesMismatch($rpuOk, $perOk, $totalOk, $consOk, $desdeOk, $hastaOk, $isDuplicateRow);
 
                     // ✅ BATCH UPDATE (upsert por id)
                     $now = now();
@@ -203,7 +234,8 @@ class CFEConciliacionService
                         'hasta_ok' => $hastaOk,
                         'validado' => $validado,
                         'conciliado_at' => $now,
-                        'updated_at' => $now, // por si usas timestamps
+                        'observaciones' => $observaciones, // ✅ nuevo
+                        'updated_at' => $now,
                     ];
 
                     if ($validado) {
@@ -225,6 +257,7 @@ class CFEConciliacionService
                             'first_seen' => $dupRef,
                             'recibo_id' => $recibo->id,
                             'rpu' => $rpu,
+                            'observaciones' => $observaciones,
                             'checks' => [
                                 'rpu_ok' => $rpuOk,
                                 'periodo_ok' => $perOk,
@@ -234,24 +267,10 @@ class CFEConciliacionService
                                 'hasta_ok' => $hastaOk,
                                 'validado' => $validado,
                             ],
-                            'xlsx' => [
-                                'periodo' => $periodoX,
-                                'total' => (float) ($totalX ?? 0),
-                                'consumo' => (float) ($consX ?? 0),
-                                'desde' => $desdeX,
-                                'hasta' => $hastaX,
-                            ],
-                            'db' => [
-                                'periodo' => $recibo->periodo,
-                                'total' => (float) $recibo->total,
-                                'consumo' => (float) $recibo->consumo,
-                                'desde' => $recibo->desde ? Carbon::parse($recibo->desde)->format('Y-m-d') : null,
-                                'hasta' => $recibo->hasta ? Carbon::parse($recibo->hasta)->format('Y-m-d') : null,
-                            ],
                         ];
                     }
 
-                    // ✅ Flushear cada N filas para no acumular memoria y acelerar
+                    // ✅ Flushear cada N filas
                     if (count($pendingUpserts) >= $this->batchSize) {
                         $this->flushUpserts($pendingUpserts);
                         $pendingUpserts = [];
@@ -275,6 +294,47 @@ class CFEConciliacionService
             $perFile[] = $fileReport;
         }
 
+        // (2) Recibos NO encontrados en ningún archivo plano:
+        // quedan con conciliado_at = null (porque al inicio se reseteó).
+        // Primero: evitar falsos "no encontrado" si hay duplicados en BD y solo conciliamos 1.
+        $duplicateUnmatchedIds = [];
+
+        foreach ($byRpu as $rpu => $group) {
+            if ($group->count() <= 1) continue;
+
+            // Si el RPU apareció en xlsx pero solo conciliamos 1 recibo, los demás quedan con conciliado_at null.
+            if (!isset($rpusInXlsx[(string)$rpu])) continue;
+
+            foreach ($group as $rec) {
+                // ojo: la colección $recibos no se refresca con upserts,
+                // así que usamos consulta directa si quieres exactitud.
+                // Para evitar query por fila, solo marcamos por IDs y luego hacemos update por whereIn.
+                $duplicateUnmatchedIds[] = $rec->id;
+            }
+        }
+
+        if (!empty($duplicateUnmatchedIds)) {
+            // marcamos los que SIGAN sin conciliado_at
+            $affected = Recibo::query()
+                ->where('periodo_id', $periodo->id)
+                ->whereIn('id', $duplicateUnmatchedIds)
+                ->whereNull('conciliado_at')
+                ->update([
+                    'observaciones' => 'RPU duplicado en BD: existe más de un recibo para este RPU. Se concilió otro registro.',
+                ]);
+
+            $global['db_duplicates_unmatched_count'] = (int) $affected;
+        }
+
+        $affectedNotInXlsx = Recibo::query()
+            ->where('periodo_id', $periodo->id)
+            ->whereNull('conciliado_at')
+            ->update([
+                'observaciones' => 'No se encontró en archivos planos del periodo vigente.',
+            ]);
+
+        $global['db_not_found_in_xlsx_count'] = (int) $affectedNotInXlsx;
+
         return [
             'ok' => true,
             'global' => $global,
@@ -292,7 +352,7 @@ class CFEConciliacionService
         Recibo::query()->upsert(
             $rows,
             ['id'], // uniqueBy
-            ['rpu_ok','periodo_ok','total_ok','consumo_ok','desde_ok','hasta_ok','validado','conciliado_at','updated_at']
+            ['rpu_ok','periodo_ok','total_ok','consumo_ok','desde_ok','hasta_ok','validado','observaciones','conciliado_at','updated_at']
         );
     }
 
@@ -430,4 +490,33 @@ class CFEConciliacionService
 
         return sha1($rpu . '|' . $periodo . '|' . $total . '|' . $consumo . '|' . $desde . '|' . $hasta);
     }
+
+    private function buildObservacionesMismatch(
+        bool $rpuOk,
+        bool $perOk,
+        bool $totalOk,
+        bool $consOk,
+        bool $desdeOk,
+        bool $hastaOk,
+        bool $isDuplicateRow = false
+    ): string {
+        $fails = [];
+        if (!$rpuOk)   $fails[] = 'RPU';
+        if (!$perOk)   $fails[] = 'Periodo';
+        if (!$totalOk) $fails[] = 'Total';
+        if (!$consOk)  $fails[] = 'Consumo';
+        if (!$desdeOk) $fails[] = 'Desde';
+        if (!$hastaOk) $fails[] = 'Hasta';
+
+        $msg = 'No validado: ' . implode(', ', $fails);
+
+        if ($isDuplicateRow) {
+            $msg .= ' | Aviso: fila duplicada en archivos planos (hash repetido).';
+        }
+
+        return $msg;
+    }
+
+
+
 }

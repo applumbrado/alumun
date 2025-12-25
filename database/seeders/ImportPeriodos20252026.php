@@ -14,8 +14,8 @@ class ImportPeriodos20252026 extends Seeder
     public function run(): void{
 
 // --- Periodos de 2025 ---
-        Periodo::create(['periodo'=>'202509', 'ano'=>2025, 'mes'=>9, 'mes_nombre'=>'SEPTIEMBRE',]);
-        Periodo::create(['periodo'=>'202510', 'ano'=>2025, 'mes'=>10, 'mes_nombre'=>'OCTUBRE','predeterminado'=>true]);
+        Periodo::create(['periodo'=>'202509', 'ano'=>2025, 'mes'=>9, 'mes_nombre'=>'SEPTIEMBRE','predeterminado'=>true,]);
+        Periodo::create(['periodo'=>'202510', 'ano'=>2025, 'mes'=>10, 'mes_nombre'=>'OCTUBRE',]);
         Periodo::create(['periodo'=>'202511', 'ano'=>2025, 'mes'=>11, 'mes_nombre'=>'NOVIEMBRE',]);
         Periodo::create(['periodo'=>'202512', 'ano'=>2025, 'mes'=>12, 'mes_nombre'=>'DICIEMBRE',]);
 

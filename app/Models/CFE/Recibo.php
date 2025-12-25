@@ -60,7 +60,9 @@ class Recibo extends Model
         'activo',
         'bloqueado',
 
-        'conciliado_at'
+        'conciliado_at',
+
+        'observaciones',
     ];
 
     protected $casts = [

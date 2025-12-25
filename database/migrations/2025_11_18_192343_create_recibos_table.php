@@ -69,6 +69,7 @@ return new class extends Migration {
             $table->boolean('activo')->default(true)->index();
             $table->boolean('bloqueado')->default(false)->index();
             $table->timestamp('conciliado_at')->nullable()->index();
+            $table->string('observaciones',250)->nullable();
 
             $table->softDeletes();
             $table->timestamps();
