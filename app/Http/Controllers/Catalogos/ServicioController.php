@@ -19,9 +19,20 @@ class ServicioController extends Controller
         ]);
     }
 
-    public function store(ServicioRequest $request)
-    {
-        Servicio::create($request->validated());
+    public function store(ServicioRequest $request){
+
+        $datas = $request->only([
+            'rpu','medidor','cuenta','tarifa',
+            'carga_contratada','carga_conectada','rmu',
+            'carga_minima', 'carga_maxima',
+            'direccion','ciudad','colonia','calle_1','calle_2','calle_3',
+            'prom_consumo', 'prom_consumo_min', 'prom_consumo_max',
+            'prom_costo', 'prom_costo_min', 'prom_costo_max',
+            'alias','grupo_id']);
+
+//        Servicio::create($request->validated());
+
+        Servicio::create($datas);
 
         return back()->with('success', 'Servicio creado correctamente');
     }
@@ -33,6 +44,8 @@ class ServicioController extends Controller
             'carga_contratada','carga_conectada','rmu',
             'carga_minima', 'carga_maxima',
             'direccion','ciudad','colonia','calle_1','calle_2','calle_3',
+            'prom_consumo', 'prom_consumo_min', 'prom_consumo_max',
+            'prom_costo', 'prom_costo_min', 'prom_costo_max',
             'alias','grupo_id']);
 
         $datas['alias'] = $datas['alias'] ?? '';

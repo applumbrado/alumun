@@ -36,9 +36,12 @@ return new class extends Migration {
             $table->string('calle_2', 150)->default('');
             $table->string('calle_3', 150)->default('');
             $table->string('alias', 150)->default('');
-            $table->unsignedInteger('promedio')->default(0);
-            $table->unsignedInteger('promedio_minimo')->default(0);
-            $table->unsignedInteger('promedio_maximo')->default(0);
+            $table->float('prom_consumo', 12,4)->default(0.0);
+            $table->float('prom_consumo_min', 12,4)->default(0.0);
+            $table->float('prom_consumo_max', 12,4)->default(0.0);
+            $table->float('prom_costo', 12,4)->default(0.0);
+            $table->float('prom_costo_min', 12,4)->default(0.0);
+            $table->float('prom_costo_max', 12,4)->default(0.0);
             $table->boolean('activo')->default(true)->index();
             $table->boolean('es_baja')->default(false)->index();
             $table->date('fecha_baja')->nullable();

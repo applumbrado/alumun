@@ -16,6 +16,61 @@ const props = defineProps({
     grupos: Array,
 });
 
+const errorsServicio = computed(() => {
+    const e = {}
+
+    const num = (v) => (v === '' || v === null || v === undefined ? null : Number(v))
+    const isNum = (v) => v !== null && !Number.isNaN(v)
+    const ge0 = (v) => isNum(v) && v >= 0
+
+    const promCons = num(form.prom_consumo)
+    const minCons  = num(form.prom_consumo_min)
+    const maxCons  = num(form.prom_consumo_max)
+
+    const promCost = num(form.prom_costo)
+    const minCost  = num(form.prom_costo_min)
+    const maxCost  = num(form.prom_costo_max)
+
+    // required + number + min 0
+    const reqNum = (key, v, label) => {
+        if (v === null) e[key] = `${label} es requerido.`
+        else if (!isNum(v)) e[key] = `${label} debe ser numérico.`
+        else if (!ge0(v)) e[key] = `${label} no puede ser menor a 0.`
+    }
+
+    reqNum('prom_consumo', promCons, 'Prom. Consumo')
+    reqNum('prom_consumo_min', minCons, 'Consumo Mín')
+    reqNum('prom_consumo_max', maxCons, 'Consumo Máx')
+
+    reqNum('prom_costo', promCost, 'Prom. Costo')
+    reqNum('prom_costo_min', minCost, 'Costo Mín')
+    reqNum('prom_costo_max', maxCost, 'Costo Máx')
+
+    // reglas cruzadas: min <= prom <= max
+    const between = (minKey, promKey, maxKey, minV, promV, maxV, label) => {
+        if (isNum(minV) && isNum(maxV) && minV > maxV) {
+            e[minKey] = `${label}: el mínimo no puede ser mayor al máximo.`
+            e[maxKey] = `${label}: el máximo no puede ser menor al mínimo.`
+        }
+
+        if (isNum(minV) && isNum(promV) && promV < minV) {
+            e[promKey] = `${label}: el promedio no puede ser menor al mínimo.`
+        }
+
+        if (isNum(maxV) && isNum(promV) && promV > maxV) {
+            e[promKey] = `${label}: el promedio no puede ser mayor al máximo.`
+        }
+    }
+
+    between('prom_consumo_min', 'prom_consumo', 'prom_consumo_max', minCons, promCons, maxCons, 'Consumo')
+    between('prom_costo_min', 'prom_costo', 'prom_costo_max', minCost, promCost, maxCost, 'Costo')
+
+    return e
+})
+
+const hasErrorsServicio = computed(() => Object.keys(errorsServicio.value).length > 0)
+
+
 const form = ref({
     id: null,
     rpu: "",
@@ -26,6 +81,12 @@ const form = ref({
     carga_conectada: "",
     carga_minima: 0.00,
     carga_maxima: 0.00,
+    prom_consumo: 0.00,
+    prom_consumo_min: 0.00,
+    prom_consumo_max: 0.00,
+    prom_costo: 0.00,
+    prom_costo_min: 0.00,
+    prom_costo_max: 0.00,
     rmu: "",
     direccion: "",
     ciudad: "",
@@ -53,7 +114,10 @@ function openCreate() {
         direccion: "", ciudad: "", colonia: "",
         calle_1: "", calle_2: "", calle_3: "",
         alias: "", grupo_id: null,
-        carga_minima: 0.00, carga_maxima: 0.00
+        carga_minima: 0.00, carga_maxima: 0.00,
+        prom_consumo: 0.00, prom_consumo_min: 0.00, prom_consumo_max: 0.00,
+        prom_costo: 0.00, prom_costo_min: 0.00, prom_costo_max: 0.00,
+
     };
 
     errors.value = {};
@@ -145,6 +209,16 @@ const isFormValid = computed(() => {
         cargaMaxima.isValid
 })
 
+// si ya tienes `errors` definido, no lo dupliques.
+// ejemplo típico: const errors = usePage().props.errors
+
+const fieldError = (key) => {
+    const server = errors?.[key]
+    const serverMsg = Array.isArray(server) ? server[0] : server
+    const clientMsg = errorsServicio?.value?.[key] // si estás usando el validador que te di
+    return serverMsg || clientMsg || ''
+}
+
 
 </script>
 
@@ -168,15 +242,19 @@ const isFormValid = computed(() => {
                     { label: '🎟️ RPU', field: 'rpu', sortable: true },
                     { label: '📅 Medidor', field: 'medidor', sortable: true },
                     { label: '👨‍👩‍👧 Cuenta', field: 'cuenta', sortable: true },
-                    { label: '🏦 Tarifa', field: 'tarifa', align: 'text-right', sortable: true },
-                    { label: '🏦 RMU', field: 'rmu', sortable: true },
-                    { label: '💰 Dirección', field: 'direccion', align: 'text-left', sortable: true },
-                    { label: '💰 Colonia', field: 'colonia', align: 'text-left', sortable: true },
+                    { label: '🔢 Prom Consumo', field: 'prom_consumo', align: 'text-right', sortable: true },
+                    { label: '💰 Prom Costo', field: 'prom_costo', align: 'text-right', sortable: true },
+                    { label: '🏦 Dirección', field: 'direccion', align: 'text-left', sortable: true },
+                    { label: '🏦 Colonia', field: 'colonia', align: 'text-left', sortable: true },
                     { label: 'Contratdada', field: 'carga_contratada', align: 'text-left', sortable: true }
                   ]"
                 :showSelection="showSelection"
                 :isColActions="isColActions"
                 paginationMode="items"
+                :footerSummary="true"
+                :summaryFields="['prom_consumo','prom_costo']"
+                summary-column="prom_consumo"
+
             >
                 <template #actions="{ item }">
                     <ActionButtons
@@ -232,6 +310,18 @@ const isFormValid = computed(() => {
                             : 'bg-slate-200 text-slate-600 border-slate-300'"
                             >
                                 🏡 Domicilio
+                            </button>
+                        </Transition>
+                        <!-- TAB PROMEDIOS -->
+                        <Transition name="tab-slide">
+                            <button
+                                @click="activeTab = 'promedio'"
+                                class="px-4 py-2 rounded-full transition font-semibold shadow-sm border cursor-pointer"
+                                :class="activeTab === 'promedio'
+                            ? 'bg-emerald-200 text-emerald-900 border-emerald-300'
+                            : 'bg-slate-200 text-slate-600 border-slate-300'"
+                            >
+                                🔢 Promedios
                             </button>
                         </Transition>
 
@@ -377,7 +467,7 @@ const isFormValid = computed(() => {
                     </div>
 
                     <!-- TAB DOMICILIO -->
-                    <div v-else class="grid grid-cols-2 gap-6">
+                    <div v-else-if="activeTab === 'domicilio'" class="grid grid-cols-2 gap-6">
 
                         <!-- Dirección -->
                         <div class="col-span-2">
@@ -446,6 +536,123 @@ const isFormValid = computed(() => {
                             </div>
                         </div>
 
+                    </div>
+
+                    <!-- TAB PROMEDIOS -->
+                    <div v-else class="grid grid-cols-6 gap-6">
+                        <!-- prom_consumo -->
+                        <div class="col-span-2">
+                            <label class="block mb-1 font-medium text-slate-200">Prom. Consumo</label>
+                            <div class="relative">
+                                <span class="emoji-icon">⚡</span>
+                                <input
+                                    v-model.number="form.prom_consumo"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                    class="input-field"
+                                />
+                            </div>
+                            <p v-if="fieldError('prom_consumo')" class="text-sm text-rose-500">
+                                {{ fieldError('prom_consumo') }}
+                            </p>
+                        </div>
+
+                        <!-- prom_consumo_min -->
+                        <div class="col-span-2">
+                            <label class="block mb-1 font-medium text-slate-200">Consumo Mín</label>
+                            <div class="relative">
+                                <span class="emoji-icon">📉</span>
+                                <input
+                                    v-model.number="form.prom_consumo_min"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                    class="input-field"
+                                />
+                            </div>
+                            <p v-if="fieldError('prom_consumo_min')" class="text-sm text-rose-500">
+                                {{ fieldError('prom_consumo_min') }}
+                            </p>
+                        </div>
+
+                        <!-- prom_consumo_max -->
+                        <div class="col-span-2">
+                            <label class="block mb-1 font-medium text-slate-200">Consumo Máx</label>
+                            <div class="relative">
+                                <span class="emoji-icon">📈</span>
+                                <input
+                                    v-model.number="form.prom_consumo_max"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                    class="input-field"
+                                />
+                            </div>
+                            <p v-if="fieldError('prom_consumo_max')" class="text-sm text-rose-500">
+                                {{ fieldError('prom_consumo_max') }}
+                            </p>
+                        </div>
+
+                        <!-- prom_costo -->
+                        <div class="col-span-2">
+                            <label class="block mb-1 font-medium text-slate-200">Prom. Costo</label>
+                            <div class="relative">
+                                <span class="emoji-icon">💰</span>
+                                <input
+                                    v-model.number="form.prom_costo"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                    class="input-field"
+                                />
+                            </div>
+                            <p v-if="fieldError('prom_costo')" class="text-sm text-rose-500">
+                                {{ fieldError('prom_costo') }}
+                            </p>
+                        </div>
+
+                        <!-- prom_costo_min -->
+                        <div class="col-span-2">
+                            <label class="block mb-1 font-medium text-slate-200">Costo Mín</label>
+                            <div class="relative">
+                                <span class="emoji-icon">🧾</span>
+                                <input
+                                    v-model.number="form.prom_costo_min"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                    class="input-field"
+                                />
+                            </div>
+                            <p v-if="fieldError('prom_costo_min')" class="text-sm text-rose-500">
+                                {{ fieldError('prom_costo_min') }}
+                            </p>
+                        </div>
+
+                        <!-- prom_costo_max -->
+                        <div class="col-span-2">
+                            <label class="block mb-1 font-medium text-slate-200">Costo Máx</label>
+                            <div class="relative">
+                                <span class="emoji-icon">🏷️</span>
+                                <input
+                                    v-model.number="form.prom_costo_max"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                    class="input-field"
+                                />
+                            </div>
+                            <p v-if="fieldError('prom_costo_max')" class="text-sm text-rose-500">
+                                {{ fieldError('prom_costo_max') }}
+                            </p>
+                        </div>
                     </div>
 
                 </template>

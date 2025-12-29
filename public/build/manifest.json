@@ -28,8 +28,8 @@
     "file": "assets/AuthenticatedLayout-DSRQBbeR.css",
     "src": "_AuthenticatedLayout-DSRQBbeR.css"
   },
-  "_DataTableCustom-1mbhA89_.js": {
-    "file": "assets/DataTableCustom-1mbhA89_.js",
+  "_DataTableCustom-CD01IeYz.js": {
+    "file": "assets/DataTableCustom-CD01IeYz.js",
     "name": "DataTableCustom",
     "imports": [
       "resources/js/app.js",
@@ -128,7 +128,7 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-3sAzLn_T.css",
+    "file": "assets/app-D2QnN1V3.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -256,13 +256,13 @@
     ]
   },
   "resources/js/Pages/CFE/ImportarArchivosCFE.vue": {
-    "file": "assets/ImportarArchivosCFE-feMYOZ2-.js",
+    "file": "assets/ImportarArchivosCFE-DN6aDXFP.js",
     "name": "ImportarArchivosCFE",
     "src": "resources/js/Pages/CFE/ImportarArchivosCFE.vue",
     "isDynamicEntry": true,
     "imports": [
       "_vendor-BbI-TUMk.js",
-      "_DataTableCustom-1mbhA89_.js",
+      "_DataTableCustom-CD01IeYz.js",
       "_AuthenticatedLayout-D8TH5lYz.js",
       "_ActionButtons-D7wvubBM.js",
       "__plugin-vue_export-helper-DlAUqK2U.js",
@@ -271,11 +271,11 @@
     ],
     "css": [
       "assets/ImportarArchivosCFE-frMDQKcK.css",
-      "assets/app-3sAzLn_T.css"
+      "assets/app-D2QnN1V3.css"
     ]
   },
   "resources/js/Pages/Catalogos/Grupos/Index.vue": {
-    "file": "assets/Index-CWn4melx.js",
+    "file": "assets/Index-JScRbkpv.js",
     "name": "Index",
     "src": "resources/js/Pages/Catalogos/Grupos/Index.vue",
     "isDynamicEntry": true,
@@ -284,13 +284,13 @@
       "_useToast-SHm2kMZ9.js",
       "_AuthenticatedLayout-D8TH5lYz.js",
       "_ActionButtons-D7wvubBM.js",
-      "_DataTableCustom-1mbhA89_.js",
+      "_DataTableCustom-CD01IeYz.js",
       "__plugin-vue_export-helper-DlAUqK2U.js",
       "resources/js/app.js",
       "_Utils-CTs1yfX8.js"
     ],
     "css": [
-      "assets/app-3sAzLn_T.css"
+      "assets/app-D2QnN1V3.css"
     ]
   },
   "resources/js/Pages/Catalogos/Periodos/PeriodoFormModal.vue": {
@@ -303,25 +303,25 @@
     ]
   },
   "resources/js/Pages/Catalogos/Periodos/PeriodosListIndex.vue": {
-    "file": "assets/PeriodosListIndex-sF5HvzvP.js",
+    "file": "assets/PeriodosListIndex-BVRqc_54.js",
     "name": "PeriodosListIndex",
     "src": "resources/js/Pages/Catalogos/Periodos/PeriodosListIndex.vue",
     "isDynamicEntry": true,
     "imports": [
       "_vendor-BbI-TUMk.js",
       "_AuthenticatedLayout-D8TH5lYz.js",
-      "_DataTableCustom-1mbhA89_.js",
+      "_DataTableCustom-CD01IeYz.js",
       "resources/js/Pages/Catalogos/Periodos/PeriodoFormModal.vue",
       "resources/js/app.js",
       "_Utils-CTs1yfX8.js",
       "__plugin-vue_export-helper-DlAUqK2U.js"
     ],
     "css": [
-      "assets/app-3sAzLn_T.css"
+      "assets/app-D2QnN1V3.css"
     ]
   },
   "resources/js/Pages/Catalogos/Servicios/Index.vue": {
-    "file": "assets/Index-Crp9Be2n.js",
+    "file": "assets/Index-fdweTAfg.js",
     "name": "Index",
     "src": "resources/js/Pages/Catalogos/Servicios/Index.vue",
     "isDynamicEntry": true,
@@ -330,14 +330,14 @@
       "_useToast-SHm2kMZ9.js",
       "_AuthenticatedLayout-D8TH5lYz.js",
       "_ActionButtons-D7wvubBM.js",
-      "_DataTableCustom-1mbhA89_.js",
+      "_DataTableCustom-CD01IeYz.js",
       "__plugin-vue_export-helper-DlAUqK2U.js",
       "resources/js/app.js",
       "_Utils-CTs1yfX8.js"
     ],
     "css": [
-      "assets/Index-DrgpwX5P.css",
-      "assets/app-3sAzLn_T.css"
+      "assets/Index-D7_SlffS.css",
+      "assets/app-D2QnN1V3.css"
     ]
   },
   "resources/js/Pages/Dashboard.vue": {
@@ -443,7 +443,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-BkrWSq8Y.js",
+    "file": "assets/app-Dhn615mm.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -476,7 +476,7 @@
       "resources/js/Pages/Welcome.vue"
     ],
     "css": [
-      "assets/app-3sAzLn_T.css"
+      "assets/app-D2QnN1V3.css"
     ]
   }
 }
