@@ -54,6 +54,8 @@ class Recibo extends Model
         'consumo_ok',
         'desde_ok',
         'hasta_ok',
+        'consumo_prom_ok',
+        'total_prom_ok',
 
         'validado',
 
@@ -95,6 +97,8 @@ class Recibo extends Model
         'consumo_ok'  => 'boolean',
         'desde_ok'    => 'boolean',
         'hasta_ok'    => 'boolean',
+        'consumo_prom_ok' => 'boolean',
+        'total_prom_ok' => 'boolean',
 
         'validado'    => 'boolean',
 

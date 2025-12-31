@@ -65,6 +65,8 @@ return new class extends Migration {
             $table->boolean('consumo_ok')->default(false)->index();
             $table->boolean('desde_ok')->default(false)->index();
             $table->boolean('hasta_ok')->default(false)->index();
+            $table->boolean('consumo_prom_ok')->default(false)->index();
+            $table->boolean('total_prom_ok')->default(false)->index();
             $table->boolean('validado')->default(false)->index();
             $table->boolean('activo')->default(true)->index();
             $table->boolean('bloqueado')->default(false)->index();
